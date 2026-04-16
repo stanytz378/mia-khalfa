@@ -1,29 +1,20 @@
 /**
- *  MIA KHALIFA - A WhatsApp Bot
+ *  MIA KHALIFA - WhatsApp Bot
  *  Copyright (c) 2026 STANY TZ
- * 
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the MIT License.
- * 
- *  Credits:
- *  - Baileys Library by @adiwajshing
- *  - Session ID implementation inspired by IAM LEGEND
- *  - Developer: STANY TZ
  * 
  *  GitHub: https://github.com/Stanytz378
  *  YouTube: https://youtube.com/@STANYTZ
  *  WhatsApp Channel: https://whatsapp.com/channel/0029Vb7fzu4EwEjmsD4Tzs1p
  */
 
-require('./config'); // Load config.js first (sets global variables)
-const fs = require('fs');
-const path = require('path');
-const chalk = require('chalk');
+require('./settings');
 const { Boom } = require('@hapi/boom');
+const fs = require('fs');
+const chalk = require('chalk');
+const path = require('path');
+const { handleMessages, handleGroupParticipantUpdate, handleStatus } = require('./main');
 const PhoneNumber = require('awesome-phonenumber');
-const readline = require('readline');
-const pino = require('pino');
-const NodeCache = require('node-cache');
+const { smsg } = require('./lib/myfunc');
 const {
     default: makeWASocket,
     useMultiFileAuthState,
@@ -33,16 +24,50 @@ const {
     jidNormalizedUser,
     makeCacheableSignalKeyStore,
     delay
-} = require('@whiskeysockets/baileys');
+} = require("@whiskeysockets/baileys");
+const NodeCache = require("node-cache");
+const pino = require("pino");
+const readline = require("readline");
 
-// Import custom modules
-const { smsg, isUrl, getBuffer, getSizeMedia, sleep, reSize } = require('./lib/myfunc');
-const { handleMessages, handleGroupParticipantUpdate, handleStatus } = require('./main');
+// Import lightweight store
 const store = require('./lib/lightweight_store');
-const { downloadSession } = require('./lib/session'); // <- session downloader
+store.readFromFile();
 
-// ==================== CONFIGURATION ====================
-const config = require('./config'); // botName, ownerNumber, prefixes, etc.
+// Import settings & config
+const settings = require('./settings');
+const config = require('./config');
+
+// Auto-save store every 10 seconds
+setInterval(() => store.writeToFile(), settings.storeWriteInterval || 10000);
+
+// ==================== SESSION DOWNLOAD ====================
+const { downloadSession } = require('./lib/session');
+let sessionId = process.env.SESSION_ID || '';
+let pairingMode = !sessionId;
+
+if (sessionId && sessionId !== '') {
+    console.log(chalk.yellow('📥 Downloading session from server...'));
+    downloadSession(sessionId).then(success => {
+        if (!success) {
+            console.log(chalk.red('❌ Failed to download session. Falling back to pairing mode.'));
+            pairingMode = true;
+            startBot(); // restart with pairing mode
+        } else {
+            console.log(chalk.green('✅ Session downloaded successfully!'));
+            pairingMode = false;
+            startBot();
+        }
+    }).catch(err => {
+        console.error('Session download error:', err);
+        pairingMode = true;
+        startBot();
+    });
+} else {
+    pairingMode = true;
+    startBot();
+}
+
+// ==================== BOT CONFIGURATION ====================
 global.botname = config.botName || 'MIA KHALIFA';
 global.themeemoji = config.themeemoji || '•';
 global.owner = [];
@@ -52,42 +77,20 @@ try {
     global.owner = [config.ownerNumber];
 }
 
-// Store write interval
-setInterval(() => store.writeToFile(), config.storeWriteInterval || 10000);
-
-// ==================== SESSION MANAGEMENT ====================
-let sessionId = process.env.SESSION_ID || '';
-let pairingMode = !sessionId || process.argv.includes('--pairing'); // if no session, fallback to pairing
-
-// If sessionId provided, download session before starting
-if (sessionId && sessionId !== '') {
-    console.log(chalk.yellow('📥 Downloading session from server...'));
-    const success = await downloadSession(sessionId);
-    if (!success) {
-        console.log(chalk.red('❌ Failed to download session. Falling back to pairing mode.'));
-        pairingMode = true;
-    } else {
-        console.log(chalk.green('✅ Session downloaded successfully!'));
-        pairingMode = false;
-    }
-} else {
-    pairingMode = true;
-}
-
-// ==================== BOT START ====================
-async function startMiaKhalifa() {
-    const { version } = await fetchLatestBaileysVersion();
-    const { state, saveCreds } = await useMultiFileAuthState('./session');
+// ==================== START BOT ====================
+async function startBot() {
+    let { version } = await fetchLatestBaileysVersion();
+    const { state, saveCreds } = await useMultiFileAuthState(`./session`);
     const msgRetryCounterCache = new NodeCache();
 
     const sock = makeWASocket({
         version,
         logger: pino({ level: 'silent' }),
         printQRInTerminal: pairingMode,
-        browser: ['MIA KHALIFA', 'Chrome', '120.0.0'],
+        browser: ["MIA KHALIFA", "Chrome", "120.0.0"],
         auth: {
             creds: state.creds,
-            keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'fatal' }).child({ level: 'fatal' }))
+            keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })),
         },
         markOnlineOnConnect: true,
         generateHighQualityLinkPreview: true,
@@ -95,13 +98,15 @@ async function startMiaKhalifa() {
         getMessage: async (key) => {
             let jid = jidNormalizedUser(key.remoteJid);
             let msg = await store.loadMessage(jid, key.id);
-            return msg?.message || '';
+            return msg?.message || "";
         },
         msgRetryCounterCache,
-        defaultQueryTimeoutMs: undefined
+        defaultQueryTimeoutMs: undefined,
     });
 
     store.bind(sock.ev);
+
+    // Helper functions
     sock.decodeJid = (jid) => {
         if (!jid) return jid;
         if (/:\d+@/gi.test(jid)) {
@@ -114,11 +119,13 @@ async function startMiaKhalifa() {
     sock.serializeM = (m) => smsg(sock, m, store);
 
     // ==================== EVENT HANDLERS ====================
-    sock.ev.on('messages.upsert', async (chatUpdate) => {
+    sock.ev.on('messages.upsert', async chatUpdate => {
         try {
             const mek = chatUpdate.messages[0];
             if (!mek.message) return;
-            mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message;
+            mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage')
+                ? mek.message.ephemeralMessage.message
+                : mek.message;
             if (mek.key?.remoteJid === 'status@broadcast') {
                 await handleStatus(sock, chatUpdate);
                 return;
@@ -133,7 +140,7 @@ async function startMiaKhalifa() {
         }
     });
 
-    sock.ev.on('contacts.update', (update) => {
+    sock.ev.on('contacts.update', update => {
         for (let contact of update) {
             let id = sock.decodeJid(contact.id);
             if (store.contacts) store.contacts[id] = { id, name: contact.notify };
@@ -155,22 +162,22 @@ async function startMiaKhalifa() {
         }
     };
 
-    // ==================== PAIRING CODE (if no session) ====================
+    // ==================== PAIRING CODE ====================
     if (pairingMode && !state.creds.registered) {
         let phoneNumberInput;
         if (config.pairingNumber) {
             phoneNumberInput = config.pairingNumber;
         } else {
             const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-            phoneNumberInput = await new Promise((resolve) => {
-                rl.question(chalk.bgBlack(chalk.greenBright(`📱 Enter your WhatsApp number (without +): `)), resolve);
+            phoneNumberInput = await new Promise(resolve => {
+                rl.question(chalk.bgBlack(chalk.greenBright(`📱 Enter WhatsApp number (without +): `)), resolve);
             });
             rl.close();
         }
         phoneNumberInput = phoneNumberInput.replace(/[^0-9]/g, '');
-        const pn = PhoneNumber(`+${phoneNumberInput}`);
+        const pn = PhoneNumber('+' + phoneNumberInput);
         if (!pn.isValid()) {
-            console.log(chalk.red('Invalid phone number. Exiting.'));
+            console.log(chalk.red('Invalid number. Exiting.'));
             process.exit(1);
         }
         setTimeout(async () => {
@@ -189,30 +196,27 @@ async function startMiaKhalifa() {
         const { connection, lastDisconnect } = s;
         if (connection === 'open') {
             console.log(chalk.green('✅ Bot connected successfully!'));
-            console.log(chalk.magenta(`\n${global.themeemoji} Bot: ${global.botname}`));
-            console.log(chalk.magenta(`${global.themeemoji} Number: ${sock.user.id.split(':')[0]}`));
-            console.log(chalk.magenta(`${global.themeemoji} Developer: STANY TZ`));
-            console.log(chalk.cyan(`\n${global.themeemoji} GitHub: https://github.com/Stanytz378`));
-            console.log(chalk.cyan(`${global.themeemoji} YouTube: https://youtube.com/@STANYTZ`));
-            console.log(chalk.cyan(`${global.themeemoji} WhatsApp Channel: https://whatsapp.com/channel/0029Vb7fzu4EwEjmsD4Tzs1p`));
-            console.log(chalk.green(`\n✅ Bot is ready!`));
+            console.log(chalk.magenta(`\n• Bot: ${global.botname}`));
+            console.log(chalk.magenta(`• Number: ${sock.user.id.split(':')[0]}`));
+            console.log(chalk.magenta(`• Developer: STANY TZ`));
+            console.log(chalk.cyan(`\n• GitHub: https://github.com/Stanytz378`));
+            console.log(chalk.cyan(`• YouTube: https://youtube.com/@STANYTZ`));
+            console.log(chalk.cyan(`• WhatsApp Channel: https://whatsapp.com/channel/0029Vb7fzu4EwEjmsD4Tzs1p`));
+            console.log(chalk.green(`\n✅ Bot ready!`));
 
-            // Send welcome message to owner
             const botNumber = sock.user.id.split(':')[0] + '@s.whatsapp.net';
             await sock.sendMessage(botNumber, {
-                text: `🤖 *${global.botname}* is now online!\n⏰ ${new Date().toLocaleString()}\n✅ Status: ACTIVE\n\n👨‍💻 Developed by STANY TZ`
+                text: `🤖 *${global.botname}* online\n⏰ ${new Date().toLocaleString()}\n✅ ACTIVE\n\n👨‍💻 STANY TZ`
             }).catch(() => {});
         }
         if (connection === 'close') {
             const statusCode = lastDisconnect?.error?.output?.statusCode;
             if (statusCode === DisconnectReason.loggedOut || statusCode === 401) {
-                console.log(chalk.red('Session logged out. Please restart with a valid session ID or pair again.'));
-                // Do not auto-restart – user must manually restart
+                console.log(chalk.red('Session logged out. Restart with valid session ID or pair again.'));
                 return;
             }
-            // Reconnect without process.exit
             console.log(chalk.yellow('Connection closed. Reconnecting...'));
-            setTimeout(startMiaKhalifa, 5000);
+            setTimeout(startBot, 5000);
         }
     });
 
@@ -220,7 +224,7 @@ async function startMiaKhalifa() {
     const anticallNotified = new Set();
     sock.ev.on('call', async (calls) => {
         try {
-            const anticallEnabled = global.anticallEnabled !== false; // can be toggled via command
+            const anticallEnabled = config.anticallEnabled !== false;
             if (!anticallEnabled) return;
             for (const call of calls) {
                 const callerJid = call.from || call.peerJid || call.chatId;
@@ -232,7 +236,7 @@ async function startMiaKhalifa() {
                 if (!anticallNotified.has(callerJid)) {
                     anticallNotified.add(callerJid);
                     setTimeout(() => anticallNotified.delete(callerJid), 60000);
-                    await sock.sendMessage(callerJid, { text: '📵 Anticall is enabled. Your call was rejected and you will be blocked.' });
+                    await sock.sendMessage(callerJid, { text: '📵 Anticall active – call rejected & you will be blocked.' });
                 }
                 setTimeout(async () => {
                     try { await sock.updateBlockStatus(callerJid, 'block'); } catch {}
@@ -248,17 +252,3 @@ async function startMiaKhalifa() {
 
     return sock;
 }
-
-// ==================== START BOT ====================
-startMiaKhalifa().catch(err => {
-    console.error('Fatal error:', err);
-    // No process.exit – just log and keep alive? Bot will stop but you can restart manually.
-});
-
-// Graceful shutdown
-process.on('uncaughtException', (err) => {
-    console.error('Uncaught Exception:', err);
-});
-process.on('unhandledRejection', (err) => {
-    console.error('Unhandled Rejection:', err);
-});
