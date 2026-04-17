@@ -32,7 +32,8 @@ store.readFromFile();
 const settings = require('./settings');
 const config = require('./config');
 
-setInterval(() => store.writeToFile(), settings.storeWriteInterval || 10000);
+// ==================== HTTP SERVER (health checks & keep-alive) ====================
+const { startServer } = require('./lib/server');
 
 // ==================== SESSION MANAGEMENT ====================
 const sessionDir = path.join(process.cwd(), 'session');
@@ -256,7 +257,8 @@ async function startBot() {
     return sock;
 }
 
-// Start the bot
+// ==================== START HTTP SERVER AND BOT ====================
+startServer();      // starts HTTP server on PORT (default 5000)
 startBot().catch(err => {
     console.error('Fatal error:', err);
 });
