@@ -1,3 +1,12 @@
+/**
+ *  MIA KHALIFA - Facebook Video Downloader
+ *  Copyright (c) 2026 STANY TZ
+ * 
+ *  GitHub: https://github.com/Stanytz378
+ *  YouTube: https://youtube.com/@STANYTZ
+ *  WhatsApp Channel: https://whatsapp.com/channel/0029Vb7fzu4EwEjmsD4Tzs1p
+ */
+
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
@@ -9,14 +18,14 @@ async function facebookCommand(sock, chatId, message) {
         
         if (!url) {
             return await sock.sendMessage(chatId, { 
-                text: "Please provide a Facebook video URL.\nExample: .fb https://www.facebook.com/..."
+                text: "📌 *Facebook Video Downloader*\n\nPlease provide a Facebook video URL.\nExample: .fb https://www.facebook.com/..."
             }, { quoted: message });
         }
 
         // Validate Facebook URL
         if (!url.includes('facebook.com')) {
             return await sock.sendMessage(chatId, { 
-                text: "That is not a Facebook link."
+                text: "❌ That is not a valid Facebook link."
             }, { quoted: message });
         }
 
@@ -64,7 +73,7 @@ async function facebookCommand(sock, chatId, message) {
 
         if (!data || data.status !== 200 || !data.success || !data.result) {
             return await sock.sendMessage(chatId, { 
-                text: 'Sorry the API did not return a valid response. Please try again later!'
+                text: '❌ Sorry, the API did not return a valid response. Please try again later!'
             }, { quoted: message });
         }
 
@@ -72,12 +81,12 @@ async function facebookCommand(sock, chatId, message) {
 
         if (!fbvid) {
             return await sock.sendMessage(chatId, { 
-                text: 'Wrong Facebook data. Please ensure the video exists.'
+                text: '❌ Could not retrieve video. Make sure the Facebook video is public and accessible.'
             }, { quoted: message });
         }
 
         // Create temp directory if it doesn't exist
-        const tmpDir = path.join(process.cwd(), 'tmp');
+        const tmpDir = path.join(process.cwd(), 'temp');
         if (!fs.existsSync(tmpDir)) {
             fs.mkdirSync(tmpDir, { recursive: true });
         }
@@ -113,11 +122,11 @@ async function facebookCommand(sock, chatId, message) {
             throw new Error('Failed to download video');
         }
 
-        // Send the video
+        // Send the video with MIA KHALIFA caption
         await sock.sendMessage(chatId, {
             video: { url: tempFile },
             mimetype: "video/mp4",
-            caption: "𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 *𝙲𝙷𝙰𝙼𝙿-𝙼𝙳*"
+            caption: "📥 *DOWNLOADED BY MIA KHALIFA*\n👨‍💻 STANY TZ"
         }, { quoted: message });
 
         // Clean up temp file
@@ -130,9 +139,9 @@ async function facebookCommand(sock, chatId, message) {
     } catch (error) {
         console.error('Error in Facebook command:', error);
         await sock.sendMessage(chatId, { 
-            text: "An error occurred. API might be down. Error: " + error.message
+            text: `❌ An error occurred: ${error.message}\nPlease try again later.`
         }, { quoted: message });
     }
 }
 
-module.exports = facebookCommand; 
+module.exports = facebookCommand;
