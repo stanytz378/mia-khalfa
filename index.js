@@ -1,5 +1,5 @@
 /**
- *  MIA KHALIFA - WhatsApp Bot (CommonJS)
+ *  MIA KHALIFA - WhatsApp Bot
  *  Copyright (c) 2026 STANY TZ
  * 
  *  GitHub: https://github.com/Stanytz378
@@ -32,7 +32,7 @@ store.readFromFile();
 const settings = require('./settings');
 const config = require('./config');
 
-// ==================== HTTP SERVER (health checks) ====================
+// HTTP server (health checks)
 const { startServer } = require('./lib/server');
 
 // ==================== SESSION MANAGEMENT ====================
@@ -79,7 +79,7 @@ try {
     global.owner = [config.ownerNumber];
 }
 
-// ==================== BOT START ====================
+// ==================== START BOT ====================
 async function startBot() {
     let { version } = await fetchLatestBaileysVersion();
     const { state, saveCreds } = await useMultiFileAuthState(`./session`);
@@ -119,7 +119,7 @@ async function startBot() {
     sock.public = true;
     sock.serializeM = (m) => smsg(sock, m, store);
 
-    // ==================== EVENT HANDLERS ====================
+    // Event handlers
     sock.ev.on('messages.upsert', async chatUpdate => {
         try {
             const mek = chatUpdate.messages[0];
@@ -163,7 +163,7 @@ async function startBot() {
         }
     };
 
-    // ==================== PAIRING CODE (only if pairingMode = true) ====================
+    // Pairing mode
     if (pairingMode && !state.creds.registered) {
         let phoneNumberInput;
         if (config.pairingNumber) {
@@ -192,7 +192,7 @@ async function startBot() {
         }, 3000);
     }
 
-    // ==================== CONNECTION UPDATE ====================
+    // Connection update
     sock.ev.on('connection.update', async (s) => {
         const { connection, lastDisconnect } = s;
         if (connection === 'open') {
@@ -221,7 +221,7 @@ async function startBot() {
         }
     });
 
-    // ==================== ANTICALL ====================
+    // Anticall
     const anticallNotified = new Set();
     sock.ev.on('call', async (calls) => {
         try {
@@ -254,7 +254,7 @@ async function startBot() {
     return sock;
 }
 
-// ==================== START SERVER AND BOT ====================
+// Start HTTP server and bot
 startServer();
 startBot().catch(err => {
     console.error('Fatal error:', err);
