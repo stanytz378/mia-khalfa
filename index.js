@@ -39,15 +39,18 @@ const sessionDir = path.join(process.cwd(), 'session');
 const credsPath = path.join(sessionDir, 'creds.json');
 let pairingMode = false;
 
+// Ensure session directory exists
+if (!fs.existsSync(sessionDir)) fs.mkdirSync(sessionDir, { recursive: true });
+
 // 1. Check if creds.json already exists
 if (fs.existsSync(credsPath)) {
-    console.log(chalk.green('✅ Existing session found in session/creds.json. Using it.'));
+    console.log(chalk.green('✅ Using existing session/creds.json'));
     pairingMode = false;
 } else {
-    // 2. Check if SESSION_ID is provided
+    // 2. Try to download using SESSION_ID from .env
     const sessionId = process.env.SESSION_ID || '';
     if (sessionId && sessionId !== '') {
-        console.log(chalk.yellow('📥 Downloading session from server using SESSION_ID...'));
+        console.log(chalk.yellow(`📥 Downloading session using SESSION_ID: ${sessionId}`));
         const { downloadSession } = require('./lib/session');
         try {
             const success = await downloadSession(sessionId);
@@ -162,7 +165,7 @@ async function startBot() {
         }
     };
 
-    // ==================== PAIRING CODE (only if in pairing mode and not registered) ====================
+    // ==================== PAIRING CODE (only if pairingMode = true) ====================
     if (pairingMode && !state.creds.registered) {
         let phoneNumberInput;
         if (config.pairingNumber) {
