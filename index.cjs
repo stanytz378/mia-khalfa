@@ -32,7 +32,7 @@ store.readFromFile();
 const settings = require('./settings');
 const config = require('./config');
 
-// ==================== HTTP SERVER (health checks & keep-alive) ====================
+// HTTP server for health checks (prevents Heroku dyno from sleeping)
 const { startServer } = require('./lib/server');
 
 // ==================== SESSION MANAGEMENT ====================
@@ -40,15 +40,12 @@ const sessionDir = path.join(process.cwd(), 'session');
 const credsPath = path.join(sessionDir, 'creds.json');
 let pairingMode = false;
 
-// Ensure session directory exists
 if (!fs.existsSync(sessionDir)) fs.mkdirSync(sessionDir, { recursive: true });
 
-// 1. Check if creds.json already exists
 if (fs.existsSync(credsPath)) {
     console.log(chalk.green('✅ Using existing session/creds.json'));
     pairingMode = false;
 } else {
-    // 2. Try to download using SESSION_ID from .env
     const sessionId = process.env.SESSION_ID || '';
     if (sessionId && sessionId !== '') {
         console.log(chalk.yellow(`📥 Downloading session using SESSION_ID: ${sessionId}`));
@@ -122,7 +119,7 @@ async function startBot() {
     sock.public = true;
     sock.serializeM = (m) => smsg(sock, m, store);
 
-    // ==================== EVENT HANDLERS ====================
+    // Event handlers
     sock.ev.on('messages.upsert', async chatUpdate => {
         try {
             const mek = chatUpdate.messages[0];
@@ -166,7 +163,7 @@ async function startBot() {
         }
     };
 
-    // ==================== PAIRING CODE (only if pairingMode = true) ====================
+    // Pairing code if needed
     if (pairingMode && !state.creds.registered) {
         let phoneNumberInput;
         if (config.pairingNumber) {
@@ -195,7 +192,7 @@ async function startBot() {
         }, 3000);
     }
 
-    // ==================== CONNECTION UPDATE ====================
+    // Connection update
     sock.ev.on('connection.update', async (s) => {
         const { connection, lastDisconnect } = s;
         if (connection === 'open') {
@@ -224,7 +221,7 @@ async function startBot() {
         }
     });
 
-    // ==================== ANTICALL ====================
+    // Anticall
     const anticallNotified = new Set();
     sock.ev.on('call', async (calls) => {
         try {
@@ -257,8 +254,8 @@ async function startBot() {
     return sock;
 }
 
-// ==================== START HTTP SERVER AND BOT ====================
-startServer();      // starts HTTP server on PORT (default 5000)
+// Start HTTP server and bot
+startServer();
 startBot().catch(err => {
     console.error('Fatal error:', err);
 });
