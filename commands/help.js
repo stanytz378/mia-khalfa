@@ -1,14 +1,17 @@
-const settings = require('../settings');
+/**
+ *  MIA KHALIFA - Help/Menu Command (No Links)
+ *  Copyright (c) 2026 STANY TZ
+ */
+
+const config = require('../config');
 const fs = require('fs');
 const path = require('path');
 
 async function helpCommand(sock, chatId, message) {
     const helpMessage = `
-*╭────(* *༒𝙲𝙷𝙰𝙼𝙿-𝙼𝙳༒* *)──╮*
-*│* 友 ɴᴀᴍᴇ ʙᴏᴛ : 𝙲𝙷𝙰𝙼𝙿-𝙼𝙳
-*│* 友 ᴠᴇʀsɪᴏɴ : 2.0 ᴍᴇᴛᴀ
-*│* 友 ᴛᴇʟᴇɢʀᴀᴍ ᴅᴇᴠᴇʟᴏᴘᴇʀ  : t.me/OGCHAMP2
-*│* 友 ɪɴғᴏʀᴍᴀᴛɪᴏɴ : t.me/weareunlimitedtech
+*╭────(* *༒ MIA🍑KHALIFA ༒* *)──╮*
+*│* 友 ɴᴀᴍᴇ ʙᴏᴛ : MIA🍑KHALIFA
+*│*友 ᴠᴇʀsɪᴏɴ : 2.0.0
 *╰────────────────────╯*
 
 *𝗦𝗖𝗥𝗢𝗟𝗟 𝗗𝗢𝗪𝗡 𝗙𝗢𝗥 𝗖𝗠𝗗:*
@@ -84,7 +87,7 @@ async function helpCommand(sock, chatId, message) {
 ╰━━━━━━━━━━━━━━━━━━⭓
 
 ╭─「«📁 *IMAGE/STICKER»*
-*│* ⏣ .blur <image>
+*│* ⏣ .blur <tr>
 *│* ⏣ .simage <reply to sticker>
 *│* ⏣ .sticker <reply to image>
 *│* ⏣ .removebg
@@ -212,10 +215,11 @@ async function helpCommand(sock, chatId, message) {
 *│* ⏣ .repo
 ╰━━━━━━━━━━━━━━━━━━⭓
 
-𝗝𝗢𝗜𝗡 𝗢𝗨𝗥 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 𝗙𝗢𝗥 𝗠𝗢𝗥𝗘 𝗨𝗣𝗗𝗔𝗧𝗘𝗦
-https://whatsapp.com/channel/0029VaN2eQQ59PwNixDnvD16 :`;
+> *Developed by STANY TZ*
+    `;
 
     try {
+        // Optional: send with image if exists (no link in caption)
         const imagePath = path.join(__dirname, '../assets/bot_image.png');
         
         if (fs.existsSync(imagePath)) {
@@ -228,30 +232,31 @@ https://whatsapp.com/channel/0029VaN2eQQ59PwNixDnvD16 :`;
                     forwardingScore: 1,
                     isForwarded: true,
                     forwardedNewsletterMessageInfo: {
-                        newsletterJid: '120363230090465542@newsletter',
-                        newsletterName: '𝙲𝙷𝙰𝙼𝙿-𝙼𝙳 𝗨𝗣𝗗𝗔𝗧𝗘',
+                        newsletterJid: config.newsletterJid || '120363404317544295@newsletter',
+                        newsletterName: config.botName || 'MIA🍑KHALIFA',
                         serverMessageId: -1
                     }
                 }
-            },{ quoted: message });
+            }, { quoted: message });
         } else {
-            console.error('Bot image not found at:', imagePath);
+            // Send without image
             await sock.sendMessage(chatId, { 
                 text: helpMessage,
                 contextInfo: {
                     forwardingScore: 1,
                     isForwarded: true,
                     forwardedNewsletterMessageInfo: {
-                        newsletterJid: '120363230090465542@newsletter',
-                        newsletterName: '𝙲𝙷𝙰𝙼𝙿-𝙼𝙳 UPDATE',
+                        newsletterJid: config.newsletterJid || '120363404317544295@newsletter',
+                        newsletterName: config.botName || 'MIA🍑KHALIFA',
                         serverMessageId: -1
-                    } 
+                    }
                 }
-            });
+            }, { quoted: message });
         }
     } catch (error) {
         console.error('Error in help command:', error);
-        await sock.sendMessage(chatId, { text: helpMessage });
+        // Fallback: send plain text
+        await sock.sendMessage(chatId, { text: helpMessage }, { quoted: message });
     }
 }
 
