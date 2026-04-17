@@ -1,0 +1,58 @@
+{
+  "name": "MIA KHALIFA WhatsApp Bot",
+  "description": "Powerful WhatsApp bot with session management, auto-reconnect, and 24/7 uptime.",
+  "repository": "https://github.com/Stanytz378/mia-khalifa",
+  "logo": "https://avatars.githubusercontent.com/u/Stanytz378",
+  "keywords": ["whatsapp", "bot", "baileys", "nodejs", "mia-khalifa", "stanytz"],
+  "env": {
+    "SESSION_ID": {
+      "description": "Your session ID from our site (format: Stanytz378/iamlegendv2_xxxx).",
+      "required": false,
+      "value": ""
+    },
+    "OWNER_NUMBER": {
+      "description": "Your WhatsApp number (without +, e.g., 255787079580).",
+      "required": true,
+      "value": "255787079580"
+    },
+    "BOT_NAME": {
+      "description": "Name of your bot.",
+      "required": false,
+      "value": "MIA KHALIFA"
+    },
+    "PREFIXES": {
+      "description": "Command prefixes (comma separated).",
+      "required": false,
+      "value": ".,!,/,#"
+    },
+    "TIMEZONE": {
+      "description": "Your timezone (e.g., Africa/Nairobi).",
+      "required": false,
+      "value": "Africa/Nairobi"
+    },
+    "ANTICALL_ENABLED": {
+      "description": "Enable anticall feature (true/false).",
+      "required": false,
+      "value": "true"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git"
+    }
+  ],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "stack": "heroku-20",
+  "addons": [],
+  "scripts": {
+    "postdeploy": "npm install"
+  }
+}
