@@ -142,6 +142,6 @@ We welcome contributions from the community! To contribute, please follow the gu
 
 For any questions or feedback, feel free to contact us via Telegram:
 
-- [Emperor](http://wa.me/255618558502) (Direct contact)
-- [Og champs](https://t.me/Stanytz076) (Direct contact)
-- [Asta Support](https://t.me/Stanytech) (Support channel)
+- [StanyTz](http://wa.me/255618558502) (Direct contact)
+- [StanyTz](https://t.me/Stanytz076) (Direct contact)
+- [Telegram Support](https://t.me/Stanytech) (Support channel)
