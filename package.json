@@ -4,14 +4,7 @@
   "description": "WhatsApp bot by STANY TZ",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "cleanup": "node cleanup.js",
-    "reset-session": "node reset-session.js",
-    "start:clean": "npm run cleanup && npm start",
-    "start:fresh": "npm run reset-session && npm start",
-    "install:panel": "npm install --legacy-peer-deps",
-    "install:force": "npm install --force",
-    "docker:build": "docker build -t mia-khalifa ."
+    "start": "node index.js"
   },
   "keywords": ["whatsapp-bot", "mia-khalifa", "stany-tz"],
   "author": "STANY TZ (https://github.com/Stanytz378)",
