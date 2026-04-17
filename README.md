@@ -1,7 +1,7 @@
 ### Mia-Khalifa🍑 Beta 2.0.0
 ## Introduction
 
-Welcome to **champs md**, an open-source WhatsApp bot developed by StanyTz. This bot leverages the latest **Baileys** library to offer a simple yet powerful interface for automating interactions on WhatsApp. Whether you're looking to automate customer service, send notifications, or simply have some fun, Asta Md is the perfect starting point.
+Welcome to **champs md**, an open-source WhatsApp bot developed by StanyTz. This bot leverages the latest **Baileys** library to offer a simple yet powerful interface for automating interactions on WhatsApp. Whether you're looking to automate customer service, send notifications, or simply have some fun, Mia Khakifa is the perfect starting point.
 
 ## Features
 
