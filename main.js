@@ -132,14 +132,14 @@ global.author = settings.author;
 global.channelLink = "https://whatsapp.com/channel/0029VaN2eQQ59PwNixDnvD16";
 global.ytch = "sibongakonkethalente";
 
-// ==================== CHANNEL INFO (EDITED FOR MIA KHALIFA) ====================
+// ==================== CHANNEL INFO (UPDATED FOR MIA KHALIFA) ====================
 const channelInfo = {
     contextInfo: {
         forwardingScore: 1,
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
             newsletterJid: '120363404317544295@newsletter',
-            newsletterName: 'MIA🍑KHALIFA',
+            newsletterName: 'MIA KHALIFA',
             serverMessageId: -1
         }
     }
