@@ -1,7 +1,7 @@
-### Champs MD Beta 2.0.0
+### Mia-Khalifa🍑 Beta 2.0.0
 ## Introduction
 
-Welcome to **champs md**, an open-source WhatsApp bot developed by Og champs. This bot leverages the latest **Baileys** library to offer a simple yet powerful interface for automating interactions on WhatsApp. Whether you're looking to automate customer service, send notifications, or simply have some fun, Asta Md is the perfect starting point.
+Welcome to **champs md**, an open-source WhatsApp bot developed by StanyTz. This bot leverages the latest **Baileys** library to offer a simple yet powerful interface for automating interactions on WhatsApp. Whether you're looking to automate customer service, send notifications, or simply have some fun, Asta Md is the perfect starting point.
 
 ## Features
 
@@ -11,14 +11,14 @@ Welcome to **champs md**, an open-source WhatsApp bot developed by Og champs. Th
 - **API Integration**: Seamlessly integrate with other APIs to expand functionality.
 
 ## Getting Started
-### Get Your Session(session id fixed😋😋)
+### Get Your Session(session id 😋😋)
 #### Please Star Our Repo For Courage ❤️
 
 This is Important To Run Your Bot
 
-<a href="https://session-fqll.onrender.com"><img title="PAIR NEW CHAMPS SESSION" src="https://img.shields.io/badge/GET SESSION-h?color=indigo&style=for-the-badge&logo=msi"></a>
+<a href="https://session-id-generator-4xuy.onrender.com/"><img title="PAIR AND GET SESSION" src="https://img.shields.io/badge/GET SESSION-h?color=indigo&style=for-the-badge&logo=msi"></a>
 
-<a href="https://github.com/OGCHAMP1/CHAMP-MD/fork"><img title="Fork Repo" src="https://img.shields.io/badge/Fork Repo-h?color=brown&style=for-the-badge&logo=stackshare"></a>
+<a href="https://github.com/Stanytz378/mia-khalfa2.1/fork"><img title="Fork Repo" src="https://img.shields.io/badge/Fork Repo-h?color=brown&style=for-the-badge&logo=stackshare"></a>
 
 
 
@@ -30,7 +30,7 @@ For Advanced Users, make sure you have the following:
 - npm (Node Package Manager)
 - Star & Fork Repo
 - Get Your Session ID
-- Put Your Session ID in `session/cred.json` file
+- Put Your Session ID in `.env` file
 
 
 ## Usage
@@ -70,7 +70,7 @@ Once the bot is running, it will automatically connect to WhatsApp and start han
 
 #### `HEROKU DEPLOYMENT🎗`
 
-<a href="https://dashboard.heroku.com/new-app?template=https://github.com/OGCHAMP1/CHAMP-MD">
+<a href="https://dashboard.heroku.com/new-app?template=https://github.com/Stanytz378/mia-khalfa2.1">
   <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy">
 </a> 
 
@@ -80,7 +80,7 @@ Once the bot is running, it will automatically connect to WhatsApp and start han
 
 
 2. Press `F1` and select `Remote-Containers: Open Folder in Container`.
-3. In the `config.js` file put your Session Id in `SESSION_ID` variable.
+3. In the `.env` file put your Session Id in `SESSION_ID` variable.
 4. Start the bot using the terminal in VS Code:
     ```sh
     npm start
@@ -90,7 +90,7 @@ Once the bot is running, it will automatically connect to WhatsApp and start han
 
 1. Sign in to [Koyeb](https://www.koyeb.com/).
 2. Create a new App and link your GitHub repository.
-3. In the your forked repository make sure you out your session Id in `config.js` file
+3. In the your forked repository make sure you out your session Id in `.env` file
    
 <a href="https://app.koyeb.com/apps/new/import-project"><img title="Deploy Koyeb" src="https://img.shields.io/badge/DEPLOY KOYEB-h?color=black&style=for-the-badge&logo=koyeb"></a>
 
@@ -123,7 +123,7 @@ pkg install ffmpeg -y
 pkg install wget
 pkg install imagemagick -y
 git clone Your Forked Github Url
-cd CHAMP-MD
+cd mia-khalifa2.1
 npm i
 npm start
 ```
@@ -142,6 +142,6 @@ We welcome contributions from the community! To contribute, please follow the gu
 
 For any questions or feedback, feel free to contact us via Telegram:
 
-- [Emperor](http://wa.me/2347041620617) (Direct contact)
-- [Og champs](https://t.me/OGCHAMP2) (Direct contact)
-- [Asta Support](https://t.me/weareunlimitedtech) (Support channel)
+- [Emperor](http://wa.me/255618558502) (Direct contact)
+- [Og champs](https://t.me/Stanytz076) (Direct contact)
+- [Asta Support](https://t.me/Stanytech) (Support channel)
