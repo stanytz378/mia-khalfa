@@ -8,7 +8,6 @@
  */
 
 require('./settings');
-const { Boom } = require('@hapi/boom');
 const fs = require('fs');
 const chalk = require('chalk');
 const path = require('path');
@@ -22,52 +21,54 @@ const {
     fetchLatestBaileysVersion,
     jidDecode,
     jidNormalizedUser,
-    makeCacheableSignalKeyStore,
-    delay
+    makeCacheableSignalKeyStore
 } = require("@whiskeysockets/baileys");
 const NodeCache = require("node-cache");
 const pino = require("pino");
 const readline = require("readline");
 
-// Import lightweight store
 const store = require('./lib/lightweight_store');
 store.readFromFile();
-
-// Import settings & config
 const settings = require('./settings');
 const config = require('./config');
 
-// Auto-save store every 10 seconds
 setInterval(() => store.writeToFile(), settings.storeWriteInterval || 10000);
 
-// ==================== SESSION DOWNLOAD ====================
-const { downloadSession } = require('./lib/session');
-let sessionId = process.env.SESSION_ID || '';
-let pairingMode = !sessionId;
+// ==================== SESSION MANAGEMENT ====================
+const sessionDir = path.join(process.cwd(), 'session');
+const credsPath = path.join(sessionDir, 'creds.json');
+let pairingMode = false;
 
-if (sessionId && sessionId !== '') {
-    console.log(chalk.yellow('📥 Downloading session from server...'));
-    downloadSession(sessionId).then(success => {
-        if (!success) {
-            console.log(chalk.red('❌ Failed to download session. Falling back to pairing mode.'));
-            pairingMode = true;
-            startBot(); // restart with pairing mode
-        } else {
-            console.log(chalk.green('✅ Session downloaded successfully!'));
-            pairingMode = false;
-            startBot();
-        }
-    }).catch(err => {
-        console.error('Session download error:', err);
-        pairingMode = true;
-        startBot();
-    });
+// 1. Check if creds.json already exists
+if (fs.existsSync(credsPath)) {
+    console.log(chalk.green('✅ Existing session found in session/creds.json. Using it.'));
+    pairingMode = false;
 } else {
-    pairingMode = true;
-    startBot();
+    // 2. Check if SESSION_ID is provided
+    const sessionId = process.env.SESSION_ID || '';
+    if (sessionId && sessionId !== '') {
+        console.log(chalk.yellow('📥 Downloading session from server using SESSION_ID...'));
+        const { downloadSession } = require('./lib/session');
+        try {
+            const success = await downloadSession(sessionId);
+            if (success && fs.existsSync(credsPath)) {
+                console.log(chalk.green('✅ Session downloaded and saved to session/creds.json'));
+                pairingMode = false;
+            } else {
+                console.log(chalk.red('❌ Failed to download session. Falling back to pairing mode.'));
+                pairingMode = true;
+            }
+        } catch (err) {
+            console.error('Session download error:', err);
+            pairingMode = true;
+        }
+    } else {
+        console.log(chalk.yellow('⚠️ No session/creds.json and no SESSION_ID. Using pairing mode.'));
+        pairingMode = true;
+    }
 }
 
-// ==================== BOT CONFIGURATION ====================
+// ==================== GLOBALS ====================
 global.botname = config.botName || 'MIA KHALIFA';
 global.themeemoji = config.themeemoji || '•';
 global.owner = [];
@@ -106,7 +107,6 @@ async function startBot() {
 
     store.bind(sock.ev);
 
-    // Helper functions
     sock.decodeJid = (jid) => {
         if (!jid) return jid;
         if (/:\d+@/gi.test(jid)) {
@@ -162,7 +162,7 @@ async function startBot() {
         }
     };
 
-    // ==================== PAIRING CODE ====================
+    // ==================== PAIRING CODE (only if in pairing mode and not registered) ====================
     if (pairingMode && !state.creds.registered) {
         let phoneNumberInput;
         if (config.pairingNumber) {
@@ -212,7 +212,7 @@ async function startBot() {
         if (connection === 'close') {
             const statusCode = lastDisconnect?.error?.output?.statusCode;
             if (statusCode === DisconnectReason.loggedOut || statusCode === 401) {
-                console.log(chalk.red('Session logged out. Restart with valid session ID or pair again.'));
+                console.log(chalk.red('Session logged out. Please restart with a valid session ID or pair again.'));
                 return;
             }
             console.log(chalk.yellow('Connection closed. Reconnecting...'));
@@ -252,3 +252,8 @@ async function startBot() {
 
     return sock;
 }
+
+// Start the bot
+startBot().catch(err => {
+    console.error('Fatal error:', err);
+});
