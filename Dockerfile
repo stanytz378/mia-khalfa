@@ -33,4 +33,4 @@ RUN mkdir -p data session temp
 EXPOSE 5000
 
 # Start bot
-CMD ["npm", "start"]
+CMD ["node", "index.js"]
