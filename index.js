@@ -10,22 +10,27 @@
  *  - Baileys Library by @adiwajshing
  *  - Pair Code implementation inspired by OGCHAMP
  */
-require('./settings')
-const { Boom } = require('@hapi/boom')
-const fs = require('fs')
-const chalk = require('chalk')
-const FileType = require('file-type')
-const path = require('path')
-const axios = require('axios')
-const { handleMessages, handleGroupParticipantUpdate, handleStatus } = require('./main');
-const PhoneNumber = require('awesome-phonenumber')
-const { imageToWebp, videoToWebp, writeExifImg, writeExifVid } = require('./lib/exif')
-const { smsg, isUrl, generateMessageTag, getBuffer, getSizeMedia, fetch, await, sleep, reSize } = require('./lib/myfunc')
-const {
-    default: makeWASocket,
-    useMultiFileAuthState,
+
+import './settings.js'
+import { Boom } from '@hapi/boom'
+import fs from 'fs'
+import { existsSync, rmSync } from 'fs'
+import { watchFile, unwatchFile } from 'fs'
+import chalk from 'chalk'
+import FileType from 'file-type'
+import path from 'path'
+import { join, dirname } from 'path'
+import { fileURLToPath } from 'url'
+import axios from 'axios'
+import { handleMessages, handleGroupParticipantUpdate, handleStatus } from './main.js'
+import PhoneNumber from 'awesome-phonenumber'
+import { imageToWebp, videoToWebp, writeExifImg, writeExifVid } from './lib/exif.js'
+import { smsg, isUrl, generateMessageTag, getBuffer, getSizeMedia, fetch, await, sleep, reSize } from './lib/myfunc.js'
+import makeWASocket from '@whiskeysockets/baileys'
+import {
     DisconnectReason,
     fetchLatestBaileysVersion,
+    useMultiFileAuthState,
     generateForwardMessageContent,
     prepareWAMessageMedia,
     generateWAMessageFromContent,
@@ -36,53 +41,57 @@ const {
     jidNormalizedUser,
     makeCacheableSignalKeyStore,
     delay
-} = require("@whiskeysockets/baileys")
-const NodeCache = require("node-cache")
-const pino = require("pino")
-const readline = require("readline")
-const { parsePhoneNumber } = require("libphonenumber-js")
-const { PHONENUMBER_MCC } = require('@whiskeysockets/baileys/lib/Utils/generics')
-const { rmSync, existsSync } = require('fs')
-const { join } = require('path')
+} from '@whiskeysockets/baileys'
+import NodeCache from 'node-cache'
+import pino from 'pino'
+import readline from 'readline'
+import { parsePhoneNumber } from 'libphonenumber-js'
+import { PHONENUMBER_MCC } from '@whiskeysockets/baileys/lib/Utils/generics'
+
+// ESM equivalents for __dirname and __filename
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 // Import lightweight store
-const store = require('./lib/lightweight_store')
+import store from './lib/lightweight_store.js'
+
+// Import settings as default import
+import settings from './settings.js'
 
 // Initialize store
 store.readFromFile()
-const settings = require('./settings')
 setInterval(() => store.writeToFile(), settings.storeWriteInterval || 10000)
 
 // ==================== SESSION DOWNLOAD (using lib/session.js) ====================
-const sessionDir = path.join(process.cwd(), 'session');
-const credsPath = path.join(sessionDir, 'creds.json');
-const sessionId = process.env.SESSION_ID || '';
+const sessionDir = join(process.cwd(), 'session')
+const credsPath = join(sessionDir, 'creds.json')
+const sessionId = process.env.SESSION_ID || ''
 
 if (sessionId && sessionId !== '') {
-    console.log(chalk.yellow('📥 Downloading session using SESSION_ID...'));
-    const { downloadSession } = require('./lib/session');
-    (async () => {
+    console.log(chalk.yellow('📥 Downloading session using SESSION_ID...'))
+    // Dynamic import for session download module
+    import('./lib/session.js').then(async ({ downloadSession }) => {
         try {
-            const success = await downloadSession(sessionId);
+            const success = await downloadSession(sessionId)
             if (success && existsSync(credsPath)) {
-                console.log(chalk.green('✅ Session downloaded and saved to session/creds.json'));
+                console.log(chalk.green('✅ Session downloaded and saved to session/creds.json'))
             } else {
-                console.log(chalk.red('❌ Failed to download session. Falling back to normal auth.'));
+                console.log(chalk.red('❌ Failed to download session. Falling back to normal auth.'))
             }
         } catch (err) {
-            console.error('Session download error:', err);
+            console.error('Session download error:', err)
         }
-    })();
+    })
 } else {
-    console.log(chalk.yellow('⚠️ No SESSION_ID provided. Will use existing session/creds.json or pairing mode.'));
+    console.log(chalk.yellow('⚠️ No SESSION_ID provided. Will use existing session/creds.json or pairing mode.'))
 }
 
 let phoneNumber = "255618558502"
-let owner = JSON.parse(fs.readFileSync('./data/owner.json'))
+let owner = JSON.parse(fs.readFileSync('./data/owner.json', 'utf8'))
 
 global.botname = "MIA🍑KHALFA"
 global.themeemoji = "•"
-const customPairingCode = "STANYTECH";
+const customPairingCode = "STANYTECH"
 const pairingCode = !!phoneNumber || process.argv.includes("--pairing-code")
 const useMobile = process.argv.includes("--mobile")
 
@@ -129,8 +138,8 @@ async function startXeonBotInc() {
             if (!mek.message) return
             mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message
             if (mek.key && mek.key.remoteJid === 'status@broadcast') {
-                await handleStatus(XeonBotInc, chatUpdate);
-                return;
+                await handleStatus(XeonBotInc, chatUpdate)
+                return
             }
             if (!XeonBotInc.public && !mek.key.fromMe && chatUpdate.type === 'notify') return
             if (mek.key.id.startsWith('BAE5') && mek.key.id.length === 16) return
@@ -155,7 +164,7 @@ async function startXeonBotInc() {
                                 serverMessageId: -1
                             }
                         }
-                    }).catch(console.error);
+                    }).catch(console.error)
                 }
             }
         } catch (err) {
@@ -210,15 +219,15 @@ async function startXeonBotInc() {
         }
 
         phoneNumberInput = phoneNumberInput.replace(/[^0-9]/g, '')
-        const pn = require('awesome-phonenumber');
+        const pn = PhoneNumber
         if (!pn('+' + phoneNumberInput).isValid()) {
-            console.log(chalk.red('Invalid phone number. Exiting.'));
-            process.exit(1);
+            console.log(chalk.red('Invalid phone number. Exiting.'))
+            process.exit(1)
         }
 
         setTimeout(async () => {
             try {
-                let code = await XeonBotInc.requestPairingCode(phoneNumberInput.trim(), customPairingCode);
+                let code = await XeonBotInc.requestPairingCode(phoneNumberInput.trim(), customPairingCode)
                 code = code?.match(/.{1,4}/g)?.join("-") || code
                 console.log(chalk.black(chalk.bgGreen(`Your Pairing Code : `)), chalk.black(chalk.white(code)))
                 console.log(chalk.yellow(`\nPlease enter this code in your WhatsApp app:\n1. Open WhatsApp\n2. Settings > Linked Devices\n3. Tap "Link a Device"\n4. Enter the code shown above`))
@@ -235,7 +244,7 @@ async function startXeonBotInc() {
             console.log(chalk.magenta(` `))
             console.log(chalk.yellow(`🌿Connected to => ` + JSON.stringify(XeonBotInc.user, null, 2)))
 
-            const botNumber = XeonBotInc.user.id.split(':')[0] + '@s.whatsapp.net';
+            const botNumber = XeonBotInc.user.id.split(':')[0] + '@s.whatsapp.net'
             await XeonBotInc.sendMessage(botNumber, {
                 text: `⏣ *BOT WORKS GEE* !\n\n⏣ Time: ${new Date().toLocaleString()}\n⏣ Status: *ACTIVE* !
                 \n⏣Make sure to join below channel 
@@ -252,7 +261,7 @@ async function startXeonBotInc() {
                         serverMessageId: -1
                     }
                 }
-            });
+            })
             await delay(1999)
             console.log(chalk.yellow(`\n\n                  ${chalk.bold.blue(`[ ${global.botname || 'MIA KHALIFA'} ]`)}\n\n`))
             console.log(chalk.cyan(`< ================================================== >`))
@@ -278,51 +287,52 @@ async function startXeonBotInc() {
         }
     })
 
-    const antiCallNotified = new Set();
+    const antiCallNotified = new Set()
     XeonBotInc.ev.on('call', async (calls) => {
         try {
-            const { readState: readAnticallState } = require('./commands/anticall');
-            const state = readAnticallState();
-            if (!state.enabled) return;
+            // Dynamic import for anticall state
+            const { readState: readAnticallState } = await import('./commands/anticall.js')
+            const state = readAnticallState()
+            if (!state.enabled) return
             for (const call of calls) {
-                const callerJid = call.from || call.peerJid || call.chatId;
-                if (!callerJid) continue;
+                const callerJid = call.from || call.peerJid || call.chatId
+                if (!callerJid) continue
                 try {
                     try {
                         if (typeof XeonBotInc.rejectCall === 'function' && call.id) {
-                            await XeonBotInc.rejectCall(call.id, callerJid);
+                            await XeonBotInc.rejectCall(call.id, callerJid)
                         } else if (typeof XeonBotInc.sendCallOfferAck === 'function' && call.id) {
-                            await XeonBotInc.sendCallOfferAck(call.id, callerJid, 'reject');
+                            await XeonBotInc.sendCallOfferAck(call.id, callerJid, 'reject')
                         }
                     } catch {}
                     if (!antiCallNotified.has(callerJid)) {
-                        antiCallNotified.add(callerJid);
-                        setTimeout(() => antiCallNotified.delete(callerJid), 60000);
-                        await XeonBotInc.sendMessage(callerJid, { text: '📵 Anticall is enabled. Your call was rejected and you will be blocked.' });
+                        antiCallNotified.add(callerJid)
+                        setTimeout(() => antiCallNotified.delete(callerJid), 60000)
+                        await XeonBotInc.sendMessage(callerJid, { text: '📵 Anticall is enabled. Your call was rejected and you will be blocked.' })
                     }
                 } catch {}
                 setTimeout(async () => {
-                    try { await XeonBotInc.updateBlockStatus(callerJid, 'block'); } catch {}
-                }, 800);
+                    try { await XeonBotInc.updateBlockStatus(callerJid, 'block') } catch {}
+                }, 800)
             }
         } catch (e) {}
-    });
+    })
 
     XeonBotInc.ev.on('creds.update', saveCreds)
     XeonBotInc.ev.on('group-participants.update', async (update) => {
-        await handleGroupParticipantUpdate(XeonBotInc, update);
-    });
+        await handleGroupParticipantUpdate(XeonBotInc, update)
+    })
     XeonBotInc.ev.on('messages.upsert', async (m) => {
         if (m.messages[0].key && m.messages[0].key.remoteJid === 'status@broadcast') {
-            await handleStatus(XeonBotInc, m);
+            await handleStatus(XeonBotInc, m)
         }
-    });
+    })
     XeonBotInc.ev.on('status.update', async (status) => {
-        await handleStatus(XeonBotInc, status);
-    });
+        await handleStatus(XeonBotInc, status)
+    })
     XeonBotInc.ev.on('messages.reaction', async (status) => {
-        await handleStatus(XeonBotInc, status);
-    });
+        await handleStatus(XeonBotInc, status)
+    })
 
     return XeonBotInc
 }
@@ -340,10 +350,11 @@ process.on('unhandledRejection', (err) => {
     console.error('Unhandled Rejection:', err)
 })
 
-let file = require.resolve(__filename)
-fs.watchFile(file, () => {
-    fs.unwatchFile(file)
-    console.log(chalk.redBright(`Update ${__filename}`))
-    delete require.cache[file]
-    require(file)
+// Hot reload (ESM version)
+const file = fileURLToPath(import.meta.url)
+watchFile(file, () => {
+    unwatchFile(file)
+    console.log(chalk.redBright(`Update ${file}`))
+    // Let process manager restart (or simply exit)
+    process.exit(0)
 })
