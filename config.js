@@ -7,7 +7,8 @@
  *  WhatsApp Channel: https://whatsapp.com/channel/0029Vb7fzu4EwEjmsD4Tzs1p
  */
 
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 // ==================== API CONFIGURATION ====================
 global.APIs = {
@@ -34,7 +35,7 @@ global.APIKeys = {
 };
 
 // ==================== BOT SETTINGS ====================
-module.exports = {
+export default {
     // Bot Identity
     botName: process.env.BOT_NAME || 'MIA🍑KHALIFA',
     ownerNumber: process.env.OWNER_NUMBER || '255787079580',
