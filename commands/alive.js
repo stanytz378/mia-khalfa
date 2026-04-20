@@ -7,7 +7,7 @@
  *  WhatsApp Channel: https://whatsapp.com/channel/0029Vb7fzu4EwEjmsD4Tzs1p
  */
 
-const config = require('../config');  // or settings, depending on your structure
+import config = from('../config');  // or settings, depending on your structure
 
 async function aliveCommand(sock, chatId, message) {
     try {
