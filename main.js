@@ -7,124 +7,124 @@
  *  WhatsApp Channel: https://whatsapp.com/channel/0029Vb7fzu4EwEjmsD4Tzs1p
  */
 
-const settings = require('./settings');
-require('./config.js');
-const { isBanned } = require('./lib/isBanned');
-const yts = require('yt-search');
-const { fetchBuffer } = require('./lib/myfunc');
-const fs = require('fs');
-const fetch = require('node-fetch');
-const ytdl = require('ytdl-core');
-const path = require('path');
-const axios = require('axios');
-const ffmpeg = require('fluent-ffmpeg');
-const { isSudo } = require('./lib/index');
-const { autotypingCommand, isAutotypingEnabled, handleAutotypingForMessage, handleAutotypingForCommand, showTypingAfterCommand } = require('./commands/autotyping');
-const { autoreadCommand, isAutoreadEnabled, handleAutoread } = require('./commands/autoread');
+import settings from './settings.js';
+import './config.js';
+import { isBanned } from './lib/isBanned.js';
+import yts from 'yt-search';
+import { fetchBuffer } from './lib/myfunc.js';
+import fs from 'fs';
+import fetch from 'node-fetch';
+import ytdl from 'ytdl-core';
+import path from 'path';
+import axios from 'axios';
+import ffmpeg from 'fluent-ffmpeg';
+import { isSudo } from './lib/index.js';
+import { autotypingCommand, isAutotypingEnabled, handleAutotypingForMessage, handleAutotypingForCommand, showTypingAfterCommand } from './commands/autotyping.js';
+import { autoreadCommand, isAutoreadEnabled, handleAutoread } from './commands/autoread.js';
 
 // Command imports
-const tagAllCommand = require('./commands/tagall');
-const helpCommand = require('./commands/help');
-const banCommand = require('./commands/ban');
-const { promoteCommand } = require('./commands/promote');
-const { demoteCommand } = require('./commands/demote');
-const muteCommand = require('./commands/mute');
-const unmuteCommand = require('./commands/unmute');
-const stickerCommand = require('./commands/sticker');
-const isAdmin = require('./lib/isAdmin');
-const warnCommand = require('./commands/warn');
-const warningsCommand = require('./commands/warnings');
-const ttsCommand = require('./commands/tts');
-const { tictactoeCommand, handleTicTacToeMove } = require('./commands/tictactoe');
-const { incrementMessageCount, topMembers } = require('./commands/topmembers');
-const ownerCommand = require('./commands/owner');
-const deleteCommand = require('./commands/delete');
-const { handleAntilinkCommand, handleLinkDetection } = require('./commands/antilink');
-const { handleAntitagCommand, handleTagDetection } = require('./commands/antitag');
-const { Antilink } = require('./lib/antilink');
-const { handleMentionDetection, mentionToggleCommand, setMentionCommand } = require('./commands/mention');
-const memeCommand = require('./commands/meme');
-const tagCommand = require('./commands/tag');
-const tagNotAdminCommand = require('./commands/tagnotadmin');
-const hideTagCommand = require('./commands/hidetag');
-const jokeCommand = require('./commands/joke');
-const quoteCommand = require('./commands/quote');
-const factCommand = require('./commands/fact');
-const weatherCommand = require('./commands/weather');
-const newsCommand = require('./commands/news');
-const kickCommand = require('./commands/kick');
-const simageCommand = require('./commands/simage');
-const attpCommand = require('./commands/attp');
-const { startHangman, guessLetter } = require('./commands/hangman');
-const { startTrivia, answerTrivia } = require('./commands/trivia');
-const { complimentCommand } = require('./commands/compliment');
-const { insultCommand } = require('./commands/insult');
-const { eightBallCommand } = require('./commands/eightball');
-const { lyricsCommand } = require('./commands/lyrics');
-const { dareCommand } = require('./commands/dare');
-const { truthCommand } = require('./commands/truth');
-const { clearCommand } = require('./commands/clear');
-const pingCommand = require('./commands/ping');
-const aliveCommand = require('./commands/alive');
-const blurCommand = require('./commands/img-blur');
-const { welcomeCommand, handleJoinEvent } = require('./commands/welcome');
-const { goodbyeCommand, handleLeaveEvent } = require('./commands/goodbye');
-const githubCommand = require('./commands/github');
-const { handleAntiBadwordCommand, handleBadwordDetection } = require('./lib/antibadword');
-const antibadwordCommand = require('./commands/antibadword');
-const { handleChatbotCommand, handleChatbotResponse } = require('./commands/chatbot');
-const takeCommand = require('./commands/take');
-const { flirtCommand } = require('./commands/flirt');
-const characterCommand = require('./commands/character');
-const wastedCommand = require('./commands/wasted');
-const shipCommand = require('./commands/ship');
-const groupInfoCommand = require('./commands/groupinfo');
-const resetlinkCommand = require('./commands/resetlink');
-const staffCommand = require('./commands/staff');
-const unbanCommand = require('./commands/unban');
-const emojimixCommand = require('./commands/emojimix');
-const { handlePromotionEvent } = require('./commands/promote');
-const { handleDemotionEvent } = require('./commands/demote');
-const viewOnceCommand = require('./commands/viewonce');
-const clearSessionCommand = require('./commands/clearsession');
-const { autoStatusCommand, handleStatusUpdate } = require('./commands/autostatus');
-const { simpCommand } = require('./commands/simp');
-const { stupidCommand } = require('./commands/stupid');
-const stickerTelegramCommand = require('./commands/stickertelegram');
-const textmakerCommand = require('./commands/textmaker');
-const { handleAntideleteCommand, handleMessageRevocation, storeMessage } = require('./commands/antidelete');
-const clearTmpCommand = require('./commands/cleartmp');
-const setProfilePicture = require('./commands/setpp');
-const { setGroupDescription, setGroupName, setGroupPhoto } = require('./commands/groupmanage');
-const instagramCommand = require('./commands/instagram');
-const facebookCommand = require('./commands/facebook');
-const spotifyCommand = require('./commands/spotify');
-const playCommand = require('./commands/play');
-const tiktokCommand = require('./commands/tiktok');
-const songCommand = require('./commands/song');
-const aiCommand = require('./commands/ai');
-const urlCommand = require('./commands/url');
-const { handleTranslateCommand } = require('./commands/translate');
-const { handleSsCommand } = require('./commands/ss');
-const { addCommandReaction, handleAreactCommand } = require('./lib/reactions');
-const { goodnightCommand } = require('./commands/goodnight');
-const { shayariCommand } = require('./commands/shayari');
-const { rosedayCommand } = require('./commands/roseday');
-const imagineCommand = require('./commands/imagine');
-const videoCommand = require('./commands/video');
-const sudoCommand = require('./commands/sudo');
-const { miscCommand, handleHeart } = require('./commands/misc');
-const { animeCommand } = require('./commands/anime');
-const { piesCommand, piesAlias } = require('./commands/pies');
-const stickercropCommand = require('./commands/stickercrop');
-const updateCommand = require('./commands/update');
-const removebgCommand = require('./commands/removebg');
-const { reminiCommand } = require('./commands/remini');
-const { igsCommand } = require('./commands/igs');
-const { anticallCommand, readState: readAnticallState } = require('./commands/anticall');
-const { pmblockerCommand, readState: readPmBlockerState } = require('./commands/pmblocker');
-const settingsCommand = require('./commands/settings');
-const soraCommand = require('./commands/sora');
+import tagAllCommand from './commands/tagall.js';
+import helpCommand from './commands/help.js';
+import banCommand from './commands/ban.js';
+import { promoteCommand } from './commands/promote.js';
+import { demoteCommand } from './commands/demote.js';
+import muteCommand from './commands/mute.js';
+import unmuteCommand from './commands/unmute.js';
+import stickerCommand from './commands/sticker.js';
+import isAdmin from './lib/isAdmin.js';
+import warnCommand from './commands/warn.js';
+import warningsCommand from './commands/warnings.js';
+import ttsCommand from './commands/tts.js';
+import { tictactoeCommand, handleTicTacToeMove } from './commands/tictactoe.js';
+import { incrementMessageCount, topMembers } from './commands/topmembers.js';
+import ownerCommand from './commands/owner.js';
+import deleteCommand from './commands/delete.js';
+import { handleAntilinkCommand, handleLinkDetection } from './commands/antilink.js';
+import { handleAntitagCommand, handleTagDetection } from './commands/antitag.js';
+import { Antilink } from './lib/antilink.js';
+import { handleMentionDetection, mentionToggleCommand, setMentionCommand } from './commands/mention.js';
+import memeCommand from './commands/meme.js';
+import tagCommand from './commands/tag.js';
+import tagNotAdminCommand from './commands/tagnotadmin.js';
+import hideTagCommand from './commands/hidetag.js';
+import jokeCommand from './commands/joke.js';
+import quoteCommand from './commands/quote.js';
+import factCommand from './commands/fact.js';
+import weatherCommand from './commands/weather.js';
+import newsCommand from './commands/news.js';
+import kickCommand from './commands/kick.js';
+import simageCommand from './commands/simage.js';
+import attpCommand from './commands/attp.js';
+import { startHangman, guessLetter } from './commands/hangman.js';
+import { startTrivia, answerTrivia } from './commands/trivia.js';
+import { complimentCommand } from './commands/compliment.js';
+import { insultCommand } from './commands/insult.js';
+import { eightBallCommand } from './commands/eightball.js';
+import { lyricsCommand } from './commands/lyrics.js';
+import { dareCommand } from './commands/dare.js';
+import { truthCommand } from './commands/truth.js';
+import { clearCommand } from './commands/clear.js';
+import pingCommand from './commands/ping.js';
+import aliveCommand from './commands/alive.js';
+import blurCommand from './commands/img-blur.js';
+import { welcomeCommand, handleJoinEvent } from './commands/welcome.js';
+import { goodbyeCommand, handleLeaveEvent } from './commands/goodbye.js';
+import githubCommand from './commands/github.js';
+import { handleAntiBadwordCommand, handleBadwordDetection } from './lib/antibadword.js';
+import antibadwordCommand from './commands/antibadword.js';
+import { handleChatbotCommand, handleChatbotResponse } from './commands/chatbot.js';
+import takeCommand from './commands/take.js';
+import { flirtCommand } from './commands/flirt.js';
+import characterCommand from './commands/character.js';
+import wastedCommand from './commands/wasted.js';
+import shipCommand from './commands/ship.js';
+import groupInfoCommand from './commands/groupinfo.js';
+import resetlinkCommand from './commands/resetlink.js';
+import staffCommand from './commands/staff.js';
+import unbanCommand from './commands/unban.js';
+import emojimixCommand from './commands/emojimix.js';
+import { handlePromotionEvent } from './commands/promote.js';
+import { handleDemotionEvent } from './commands/demote.js';
+import viewOnceCommand from './commands/viewonce.js';
+import clearSessionCommand from './commands/clearsession.js';
+import { autoStatusCommand, handleStatusUpdate } from './commands/autostatus.js';
+import { simpCommand } from './commands/simp.js';
+import { stupidCommand } from './commands/stupid.js';
+import stickerTelegramCommand from './commands/stickertelegram.js';
+import textmakerCommand from './commands/textmaker.js';
+import { handleAntideleteCommand, handleMessageRevocation, storeMessage } from './commands/antidelete.js';
+import clearTmpCommand from './commands/cleartmp.js';
+import setProfilePicture from './commands/setpp.js';
+import { setGroupDescription, setGroupName, setGroupPhoto } from './commands/groupmanage.js';
+import instagramCommand from './commands/instagram.js';
+import facebookCommand from './commands/facebook.js';
+import spotifyCommand from './commands/spotify.js';
+import playCommand from './commands/play.js';
+import tiktokCommand from './commands/tiktok.js';
+import songCommand from './commands/song.js';
+import aiCommand from './commands/ai.js';
+import urlCommand from './commands/url.js';
+import { handleTranslateCommand } from './commands/translate.js';
+import { handleSsCommand } from './commands/ss.js';
+import { addCommandReaction, handleAreactCommand } from './lib/reactions.js';
+import { goodnightCommand } from './commands/goodnight.js';
+import { shayariCommand } from './commands/shayari.js';
+import { rosedayCommand } from './commands/roseday.js';
+import imagineCommand from './commands/imagine.js';
+import videoCommand from './commands/video.js';
+import sudoCommand from './commands/sudo.js';
+import { miscCommand, handleHeart } from './commands/misc.js';
+import { animeCommand } from './commands/anime.js';
+import { piesCommand, piesAlias } from './commands/pies.js';
+import stickercropCommand from './commands/stickercrop.js';
+import updateCommand from './commands/update.js';
+import removebgCommand from './commands/removebg.js';
+import { reminiCommand } from './commands/remini.js';
+import { igsCommand } from './commands/igs.js';
+import { anticallCommand, readState as readAnticallState } from './commands/anticall.js';
+import { pmblockerCommand, readState as readPmBlockerState } from './commands/pmblocker.js';
+import settingsCommand from './commands/settings.js';
+import soraCommand from './commands/sora.js';
 
 // Global settings
 global.packname = settings.packname;
@@ -193,7 +193,7 @@ async function handleMessages(sock, messageUpdate, printLog) {
         }
         // Enforce private mode BEFORE any replies (except owner/sudo)
         try {
-            const data = JSON.parse(fs.readFileSync('./data/messageCount.json'));
+            const data = JSON.parse(fs.readFileSync('./data/messageCount.json', 'utf8'));
             // Allow owner/sudo to use bot even in private mode
             if (!data.isPublic && !message.key.fromMe && !senderIsSudo) {
                 return; // Silently ignore messages from non-owners when in private mode
@@ -219,15 +219,6 @@ async function handleMessages(sock, messageUpdate, printLog) {
             await handleTicTacToeMove(sock, chatId, senderId, userMessage);
             return;
         }
-
-        /*  // Basic message response in private chat
-          if (!isGroup && (userMessage === 'hi' || userMessage === 'hello' || userMessage === 'bot' || userMessage === 'hlo' || userMessage === 'hey' || userMessage === 'bro')) {
-              await sock.sendMessage(chatId, {
-                  text: 'Hi, How can I help you?\nYou can use .menu for more info and commands.',
-                  ...channelInfo
-              });
-              return;
-          } */
 
         if (!message.key.fromMe) incrementMessageCount(chatId, senderId);
 
@@ -393,7 +384,7 @@ async function handleMessages(sock, messageUpdate, printLog) {
                 // Read current data first
                 let data;
                 try {
-                    data = JSON.parse(fs.readFileSync('./data/messageCount.json'));
+                    data = JSON.parse(fs.readFileSync('./data/messageCount.json', 'utf8'));
                 } catch (error) {
                     console.error('Error reading access mode:', error);
                     await sock.sendMessage(chatId, { text: 'Failed to read bot mode status', ...channelInfo });
@@ -424,7 +415,7 @@ async function handleMessages(sock, messageUpdate, printLog) {
                     data.isPublic = action === 'public';
 
                     // Save updated data
-                    fs.writeFileSync('./data/messageCount.json', JSON.stringify(data, null, 2));
+                    fs.writeFileSync('./data/messageCount.json', JSON.stringify(data, null, 2), 'utf8');
 
                     await sock.sendMessage(chatId, { text: `Bot is now in *${action}* mode`, ...channelInfo });
                 } catch (error) {
@@ -773,9 +764,6 @@ async function handleMessages(sock, messageUpdate, printLog) {
                 const autoStatusArgs = userMessage.split(' ').slice(1);
                 await autoStatusCommand(sock, chatId, message, autoStatusArgs);
                 break;
-            case userMessage.startsWith('.simp'):
-                await simpCommand(sock, chatId, message);
-                break;
             case userMessage.startsWith('.metallic'):
                 await textmakerCommand(sock, chatId, message, userMessage, 'metallic');
                 break;
@@ -882,25 +870,6 @@ async function handleMessages(sock, messageUpdate, printLog) {
                 break;
             case userMessage.startsWith('.video') || userMessage.startsWith('.ytmp4'):
                 await videoCommand(sock, chatId, message);
-// In your main bot file, add this to handle button responses
-async function handleMessage(sock, message) {
-    try {
-        if (message.message?.buttonsResponseMessage) {
-            const buttonId = message.message.buttonsResponseMessage.selectedButtonId;
-            const chatId = message.key.remoteJid;
-            
-            if (buttonId?.startsWith('quality_')) {
-                const quality = buttonId.replace('quality_', '');
-                const { handleQualitySelection } = require('./videoCommand');
-                await handleQualitySelection(sock, chatId, message, quality);
-            }
-        }
-        
-        // ... rest of your message handling code
-    } catch (error) {
-        console.error('Button handler error:', error);
-    }
-}                
                 break;
             case userMessage.startsWith('.tiktok') || userMessage.startsWith('.tt'):
                 await tiktokCommand(sock, chatId, message);
@@ -932,9 +901,11 @@ async function handleMessage(sock, message) {
             case userMessage === '.roseday':
                 await rosedayCommand(sock, chatId, message);
                 break;
-            case userMessage.startsWith('.imagine') || userMessage.startsWith('.flux') || userMessage.startsWith('.dalle'): await imagineCommand(sock, chatId, message);
+            case userMessage.startsWith('.imagine') || userMessage.startsWith('.flux') || userMessage.startsWith('.dalle'):
+                await imagineCommand(sock, chatId, message);
                 break;
-            case userMessage === '.jid': await groupJidCommand(sock, chatId, message);
+            case userMessage === '.jid':
+                await groupJidCommand(sock, chatId, message);
                 break;
             case userMessage.startsWith('.autotyping'):
                 await autotypingCommand(sock, chatId, message);
@@ -1058,7 +1029,6 @@ async function handleMessage(sock, message) {
             case userMessage.startsWith('.facepalm'):
             case userMessage.startsWith('.face-palm'):
             case userMessage.startsWith('.animuquote'):
-            case userMessage.startsWith('.quote'):
             case userMessage.startsWith('.loli'):
                 {
                     const parts = userMessage.trim().split(/\s+/);
@@ -1179,7 +1149,7 @@ async function handleGroupParticipantUpdate(sock, update) {
         // Respect bot mode: only announce promote/demote in public mode
         let isPublic = true;
         try {
-            const modeData = JSON.parse(fs.readFileSync('./data/messageCount.json'));
+            const modeData = JSON.parse(fs.readFileSync('./data/messageCount.json', 'utf8'));
             if (typeof modeData.isPublic === 'boolean') isPublic = modeData.isPublic;
         } catch (e) {
             // If reading fails, default to public behavior
@@ -1213,11 +1183,32 @@ async function handleGroupParticipantUpdate(sock, update) {
     }
 }
 
-// Instead, export the handlers along with handleMessages
-module.exports = {
+// Handle button responses for video quality selection (dynamic import for videoCommand)
+async function handleMessage(sock, message) {
+    try {
+        if (message.message?.buttonsResponseMessage) {
+            const buttonId = message.message.buttonsResponseMessage.selectedButtonId;
+            const chatId = message.key.remoteJid;
+            
+            if (buttonId?.startsWith('quality_')) {
+                const quality = buttonId.replace('quality_', '');
+                // Dynamic import since we're in ESM and cannot require synchronously
+                const { handleQualitySelection } = await import('./commands/video.js');
+                await handleQualitySelection(sock, chatId, message, quality);
+            }
+        }
+    } catch (error) {
+        console.error('Button handler error:', error);
+    }
+}
+
+// Export the handlers
+export {
     handleMessages,
     handleGroupParticipantUpdate,
-    handleStatus: async (sock, status) => {
-        await handleStatusUpdate(sock, status);
-    }
+    handleStatusUpdate as handleStatus
 };
+
+// Re-export handleStatusUpdate for cleaner naming
+import { handleStatusUpdate } from './commands/autostatus.js';
+export { handleStatusUpdate };
