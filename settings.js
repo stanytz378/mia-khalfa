@@ -1,8 +1,8 @@
 // settings.js
 const settings = {
-    packname: 'MIA KHALIFA',
+    packname: 'MIA🍑KHALIFA',
     author: 'STANY TZ',
-    botName: "MIA KHALIFA",
+    botName: "MIA🍑KHALIFA",
     botOwner: 'STANY TZ',
     ownerNumber: '255787079580',
     giphyApiKey: 'qnl7ssQChTdPjsKta2Ax2LMaGXz303tq',
@@ -14,4 +14,4 @@ const settings = {
     updateZipUrl: "",
 };
 
-module.exports = settings;
+export default settings;
