@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "description": "WhatsApp bot by STANY TZ",
   "main": "index.js",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
