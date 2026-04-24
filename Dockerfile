@@ -1,36 +1,20 @@
-FROM node:20-bullseye
+FROM node:20-slim
 
-# Install build tools na dependencies muhimu
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    python3 \
-    make \
-    g++ \
-    gcc \
-    libc6-dev \
-    libvips-dev \
-    git \
-    curl \
-    ffmpeg \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ffmpeg \
+        ca-certificates \
+        curl && \
+    rm -rf /var/lib/apt/lists/*
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
 
-# Install dependencies (force & legacy peer deps)
-RUN npm install --force --legacy-peer-deps
+RUN npm install --omit=dev
 
-# Copy source code
 COPY . .
 
-# Create necessary directories
-RUN mkdir -p data session temp
-
-# Expose port (optional, kwa health check)
 EXPOSE 5000
 
-# Start bot
-CMD ["node", "index.js"]
+CMD ["npm", "start"]
