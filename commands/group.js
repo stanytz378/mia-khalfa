@@ -1,5 +1,5 @@
-const { gmd, getGroupMetadata, getLidMapping } = require("../black_hat");
-const { getGroupSetting, setGroupSetting } = require("../black_hat/database/groupSettings");
+const { gmd, getGroupMetadata, getLidMapping } = require("../stanytz");
+const { getGroupSetting, setGroupSetting } = require("../stanytz/database/groupSettings");
 
 gmd(
   {
