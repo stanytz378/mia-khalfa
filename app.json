@@ -1,48 +1,52 @@
 {
-  "name": "MIA KHALIFA WhatsApp Bot",
-  "description": "Powerful WhatsApp bot with session management, auto-reconnect, and 24/7 uptime.",
-  "repository": "https://github.com/Stanytz378/mia-khalifa",
-  "logo": "https://avatars.githubusercontent.com/u/Stanytz378",
-  "keywords": ["whatsapp", "bot", "baileys", "nodejs", "mia-khalifa", "stanytz"],
+  "name": "mia-khalifa",
+  "version": "2.0.0",
+  "description": "mia-khalifa, a Multi Device Whatsapp Bot built by stanytz  to Enhance Whatsapp Communication Experience",
+  "logo": "https://files.catbox.moe/wfh6gr.jpg",
+  "keywords": ["mia-khalifa", "gifted-baileys", "gifted-btns", "gifted-api"],
+  "success_url": "/",
+  "stack": "heroku-22",
   "env": {
     "SESSION_ID": {
-      "description": "Your session ID from our site (format: Stanytz378/iamlegendv2_xxxx).",
-      "required": false,
+      "description": "Your bot SESSION_ID. Get one from the pairing session page.",
+      "required": true,
       "value": ""
     },
-    "OWNER_NUMBER": {
-      "description": "Your WhatsApp number (without +, e.g., 255787079580).",
+    "MODE": {
+      "description": "Worktype of your bot. Use 'public' (everyone can use it) or 'private' (only bot number).",
       "required": true,
-      "value": "255787079580"
+      "value": "public"
     },
-    "BOT_NAME": {
-      "description": "Name of your bot.",
-      "required": false,
-      "value": "MIA KHALIFA"
-    },
-    "PREFIXES": {
-      "description": "Command prefixes (comma separated).",
-      "required": false,
-      "value": ".,!,/,#"
-    },
-    "TIMEZONE": {
-      "description": "Your timezone (e.g., Africa/Nairobi).",
-      "required": false,
+    "TIME_ZONE": {
+      "description": "Your timezone e.g. Africa/Nairobi, America/New_York, Asia/Kolkata",
+      "required": true,
       "value": "Africa/Nairobi"
     },
-    "ANTICALL_ENABLED": {
-      "description": "Enable anticall feature (true/false).",
+    "AUTO_LIKE_STATUS": {
+      "description": "Auto-like WhatsApp statuses. Set true or false.",
       "required": false,
       "value": "true"
+    },
+    "AUTO_READ_STATUS": {
+      "description": "Auto-view WhatsApp statuses. Set true or false.",
+      "required": false,
+      "value": "true"
+    },
+    "DATABASE_URL": {
+      "description": "PostgreSQL connection URL. Leave blank to use the auto-provisioned Heroku Postgres addon, or supply your own (Neon, Supabase, etc.). Falls back to SQLite if empty and no addon is attached.",
+      "required": false,
+      "value": ""
     }
   },
-  "buildpacks": [
+  "addons": [
     {
-      "url": "heroku/nodejs"
-    },
-    {
-      "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git"
+      "plan": "heroku-postgresql:essential-0",
+      "as": "DATABASE"
     }
+  ],
+  "buildpacks": [
+    { "url": "heroku/nodejs" },
+    { "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest" }
   ],
   "formation": {
     "web": {
@@ -50,9 +54,12 @@
       "size": "basic"
     }
   },
-  "stack": "heroku-24",
-  "addons": [],
-  "scripts": {
-    "postdeploy": "npm install"
+  "environments": {
+    "test": {
+      "addons": [],
+      "env": {
+        "DATABASE_URL": ""
+      }
+    }
   }
 }
