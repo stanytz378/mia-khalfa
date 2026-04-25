@@ -32,6 +32,7 @@ gmd(
     {
         pattern: "spotify",
         category: "downloader",
+        react: "🎧",
         aliases: ["spotifydl", "spotidl", "spoti"],
         description: "Download Spotify tracks by URL or song name",
     },
@@ -247,6 +248,7 @@ gmd(
     {
         pattern: "gdrive",
         category: "downloader",
+        react: "📁",
         aliases: ["googledrive", "drive", "gdrivedl"],
         description: "Download from Google Drive",
     },
@@ -399,6 +401,7 @@ gmd(
     {
         pattern: "mediafire",
         category: "downloader",
+        react: "🔥",
         aliases: ["mfire", "mediafiredl", "mfiredl"],
         description: "Download from MediaFire",
     },
@@ -524,6 +527,7 @@ gmd(
     {
         pattern: "apk",
         category: "downloader",
+        react: "📱",
         aliases: ["app", "apkdl", "appdownload"],
         description: "Download Android APK files",
     },
@@ -548,6 +552,8 @@ gmd(
         }
 
         try {
+         //   await reply(`Searching for *${q}* APK...`);
+
             const apiUrl = `${GiftedTechApi}/api/download/apkdl?apikey=${GiftedApiKey}&appName=${encodeURIComponent(q)}`;
             const response = await axios.get(apiUrl, { timeout: 60000 });
 
@@ -603,6 +609,7 @@ gmd(
     {
         pattern: "pastebin",
         category: "downloader",
+        react: "📋",
         aliases: ["getpaste", "getpastebin", "pastedl", "pastebindl", "paste"],
         description: "Fetch content from Pastebin",
     },
@@ -691,10 +698,12 @@ gmd(
     },
 );
 
+
 gmd(
     {
         pattern: "ytv",
         category: "downloader",
+        react: "📽",
         description: "Download Video from Youtube",
     },
     async (from, Gifted, conText) => {
@@ -860,3 +869,4 @@ gmd(
         }
     },
 );
+
