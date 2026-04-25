@@ -382,7 +382,7 @@ const GiftedAntiGroupMention = async (Gifted, message, getGroupMetadata) => {
         if (!sender || sender.endsWith('@g.us')) return;
         
         const settings = await getAllSettings();
-        const botName = settings.BOT_NAME || '𝐀𝐓𝐀𝐒𝐒𝐀-𝐌𝐃';
+        const botName = settings.BOT_NAME || 'MIA🍑KHALIFA';
         
         if (sender.endsWith('@lid')) {
             const cached = getLidMapping(sender);
@@ -515,7 +515,7 @@ function getTimeBlock() {
 const GiftedAutoBio = async (Gifted) => {
                 try {
                     const settings = await getAllSettings();
-                    const botName = settings.BOT_NAME || '𝐁𝐋𝐀𝐂𝐊 𝐇𝐀𝐓-𝐌𝐃';
+                    const botName = settings.BOT_NAME || 'MIA🍑KHALIFA';
                     
                     const block = getTimeBlock();
                     const timeDate = getCurrentDateTime();
@@ -588,7 +588,7 @@ function isIdentityQuestion(query) {
 
 async function getAIResponse(query) {
     if (isIdentityQuestion(query)) {
-        return 'I am an Interactive Ai Assistant Chat Bot, created by Clever tech nexus!';
+        return 'I am an Interactive Ai Assistant Chat Bot, created by STANYTZ!';
     }
     
     try {
@@ -672,7 +672,7 @@ function GiftedChatBot(Gifted, chatBot, chatBotMode, createContext, createContex
             if (text.length < 2) return;
 
             const settings = await getAllSettings().catch(() => ({}));
-            const botName = settings.BOT_NAME || '𝐁𝐋𝐀𝐂𝐊 𝐇𝐀𝐓-𝐌𝐃';
+            const botName = settings.BOT_NAME || 'MIA🍑KHALFA';
 
             const aiResponse = await getAIResponse(text);
 
@@ -682,7 +682,7 @@ function GiftedChatBot(Gifted, chatBot, chatBotMode, createContext, createContex
                     text: String(aiResponse),
                     ...(await createContext(jid, {
                         title: `${botName} 𝐂𝐇𝐀𝐓 𝐁𝐎𝐓`,
-                        body: '𝐏𝐨𝐰𝐞𝐫𝐞𝐝 𝐛𝐲 𝑨𝒏𝒐𝒏𝒚𝒎𝒖𝒔 𝒖𝒔𝒆𝒓🥷'
+                        body: 'STANY TZ'
                     }))
                 }, { quoted: msg });
             }
@@ -705,7 +705,7 @@ function GiftedChatBot(Gifted, chatBot, chatBotMode, createContext, createContex
                     waveform: [100, 0, 100, 0, 100, 0, 100],
                     ...(await createContext2(jid, {
                         title: `${botName} 𝐀𝐔𝐃𝐈𝐎-𝐂𝐇𝐀𝐓 𝐁𝐎𝐓`,
-                        body: '𝐏𝐨𝐰𝐞𝐫𝐞𝐝 𝐛𝐲 𝑨𝒏𝒐𝒏𝒚𝒎𝒐𝒖𝒔 𝒖𝒔𝒆𝒓🥷'
+                        body: 'STANY TZ'
                     }))
                 }, { quoted: msg });
             }
@@ -846,7 +846,7 @@ const processMediaMessage = async (deletedMessage) => {
 
 const GiftedAntiDelete = async (Gifted, deletedMsg, key, deleter, sender, botOwnerJid, deleterPushName, senderPushName) => {
     const settings = await getAllSettings();
-    const botName = settings.BOT_NAME || '𝐁𝐋𝐀𝐂𝐊 𝐇𝐀𝐓-𝐌𝐃';
+    const botName = settings.BOT_NAME || 'MIA🍑KHALIFA';
     const botPic = settings.BOT_PIC || '';
     const botFooter = settings.FOOTER || '';
     const antiDelete = settings.ANTIDELETE || 'indm';
