@@ -8,7 +8,7 @@ const {
     deleteNote,
     deleteAllNotes,
 } = require("../stanytz/database/notes");
-const { getContextInfo } = require("../black_hat/contextInfo");
+const { getContextInfo } = require("../stanytz/contextInfo");
 
 initNotesDB();
 
