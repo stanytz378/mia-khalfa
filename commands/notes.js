@@ -1,4 +1,4 @@
-const { gmd } = require("..stanytz");
+const { gmd } = require("../stanytz");
 const {
     initNotesDB,
     addNote,
