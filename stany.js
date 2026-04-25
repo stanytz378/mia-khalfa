@@ -101,7 +101,7 @@ const express = require("express");
 
 // ==================== SESSION DOWNLOAD (from lib/session.js) ====================
 const sessionId = config.SESSION_ID || process.env.SESSION_ID || '';
-const sessionDir = path.join(__dirname, "black_hat", "session");
+const sessionDir = path.join(__dirname, "stanytz", "session");
 const credsPath = path.join(sessionDir, "creds.json");
 
 if (sessionId && sessionId !== '') {
@@ -135,7 +135,7 @@ async function resolveRealJid(Gifted, jid) {
     if (!jid) return null;
     if (!jid.endsWith('@lid')) return jid;   // already real
     try {
-        const { getLidMapping } = require('./black_hat/connection/groupCache');
+        const { getLidMapping } = require('./stanytz/connection/groupCache');
         const cached = getLidMapping(jid);
         if (cached) return cached;
     } catch (_) {}
@@ -144,7 +144,7 @@ async function resolveRealJid(Gifted, jid) {
         if (resolved && !resolved.endsWith('@lid')) return resolved;
     } catch (_) {}
     try {
-        const { getLidMappingFromDb } = require('./black_hat/database/lidMapping');
+        const { getLidMappingFromDb } = require('./stanytz/database/lidMapping');
         const fromDb = await getLidMappingFromDb(jid);
         if (fromDb) return fromDb;
     } catch (_) {}
@@ -158,7 +158,7 @@ let store;
 
 logger.level = "silent";
 app.use(express.static("stanytz"));
-app.get("/", (req, res) => res.sendFile(__dirname + "/black_hat/black_hat.html"));
+app.get("/", (req, res) => res.sendFile(__dirname + "/stanytz/stanytz.html"));
 app.get("/health", (req, res) =>
     res.status(200).json({ status: "alive", uptime: process.uptime() }),
 );
