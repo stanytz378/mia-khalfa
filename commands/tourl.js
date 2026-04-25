@@ -8,7 +8,7 @@ gmd({
     aliases: ["url5"],
     react: "⬆️",
     category: "uploader",
-    description: "Upload any file to blackhatcdn",
+    description: "Upload any file to stanytzcdn",
 }, async (from, Gifted, conText) => {
     await handleUpload(from, Gifted, conText, 'giftedcdn');
 });
@@ -88,7 +88,7 @@ async function handleUpload(from, Gifted, conText, service) {
             mediaType = 'image';
         } 
         else if (quotedVideo) {
-            if (service !== 'catbox' && service !== 'blackhatcdn' && service !== 'githubcdn') {
+            if (service !== 'catbox' && service !== 'stanytzcdn' && service !== 'githubcdn') {
                 return reply(`❌ ${service} only supports images. Use ${botPrefix}catbox or ${botPrefix}blackhatcdn or ${botPrefix}githubcdn  for videos and any other file type.`);
             }
             buffer = await getMediaBuffer(quotedVideo, "video");
@@ -98,7 +98,7 @@ async function handleUpload(from, Gifted, conText, service) {
             mediaType = 'video';
         } 
         else if (quotedAudio) {
-            if (service !== 'catbox' && service !== 'blackhatcdn' && service !== 'githubcdn') {
+            if (service !== 'catbox' && service !== 'stanytzcdn' && service !== 'githubcdn') {
                 return reply(`❌ ${service} only supports images. Use ${botPrefix}catbox or ${botPrefix}blackhatcdn or ${botPrefix}githubcdn  for audios and any other file type.`);
             }
             buffer = await getMediaBuffer(quotedAudio, "audio");
@@ -119,7 +119,7 @@ async function handleUpload(from, Gifted, conText, service) {
             mediaType = 'sticker';
         } 
         else if (quotedDocument) {
-            if (service !== 'catbox' && service !== 'blackhatcdn' && service !== 'githubcdn') {
+            if (service !== 'catbox' && service !== 'stanytztcdn' && service !== 'githubcdn') {
                 return reply(`❌ ${service} only supports images. Use ${botPrefix}catbox or ${botPrefix}blackhatcdn or ${botPrefix}githubcdn  for documents and any other file type.`);
             }
             buffer = await getMediaBuffer(quotedDocument, "document");
@@ -131,7 +131,7 @@ async function handleUpload(from, Gifted, conText, service) {
             return reply(`❌ Unsupported message type.`);
         }
 
-        if (!isImage && service !== 'catbox' && service !== 'blackhatcdn' && service !== 'githubcdn') {
+        if (!isImage && service !== 'catbox' && service !== 'stanytzcdn' && service !== 'githubcdn') {
             return reply(`❌ ${service} only supports image files. Use ${botPrefix}catbox or ${botPrefix}blackhatcdn or ${botPrefix}githubcdn for any other file types.`);
         }
 
