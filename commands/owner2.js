@@ -1,4 +1,4 @@
-const { gmd, commands, getSetting } = require("../black_hat");
+const { gmd, commands, getSetting } = require("../stanytz");
 const { downloadContentFromMessage } = require("gifted-baileys");
 const FormData = require("form-data");
 const { Blob } = require("buffer");
