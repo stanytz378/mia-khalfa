@@ -1,4 +1,4 @@
-const { gmd, commands, normalFont, formatBytes } = require("stanytz"),
+const { gmd, commands, monospace, formatBytes } = require("../stanytz"),
   fs = require("fs"),
   axios = require("axios"),
   BOT_START_TIME = Date.now(),
@@ -9,9 +9,20 @@ const { gmd, commands, normalFont, formatBytes } = require("stanytz"),
   ram = `${formatBytes(freeMemoryBytes)}/${formatBytes(totalMemoryBytes)}`;
 const { sendButtons } = require("gifted-btns");
 
-// -------------------------------------------------------------------
-// COMMAND: ping
-// -------------------------------------------------------------------
+// ---------- Helper: time‑based greeting (normal font) ----------
+const getGreeting = (name) => {
+  const hour = new Date().getHours();
+  let greeting = "";
+  if (hour < 12) greeting = "🌅 Good Morning";
+  else if (hour < 17) greeting = "☀️ Good Afternoon";
+  else if (hour < 21) greeting = "🌤️ Good Evening";
+  else greeting = "🌙 Good Night";
+  return `${greeting} @${name.split("@")[0]}`;
+};
+
+// --------------------------------------------------------------
+// PING COMMAND
+// --------------------------------------------------------------
 gmd(
   {
     pattern: "ping",
@@ -24,7 +35,6 @@ gmd(
     const {
       mek,
       react,
-      newsletterJid,
       newsletterUrl,
       botFooter,
       botName,
@@ -40,28 +50,27 @@ gmd(
     const responseTime = Math.floor(elapsed[0] * 1000 + elapsed[1] / 1000000);
 
     await sendButtons(Gifted, from, {
-      title: "Bot Speed",
-      text: `⚡ Pong: ${responseTime}ms`,
-      footer: `> *${botFooter}*`,
+      title: "✨ Bot Speed ✨",
+      text: `💖 Pong: ${responseTime}ms`,
+      footer: `> ${botFooter}`,
       buttons: [
         { id: `${botPrefix}uptime`, text: "⏱️ Uptime" },
         {
           name: "cta_url",
           buttonParamsJson: JSON.stringify({
-            display_text: "WaChannel",
+            display_text: "📢 Channel",
             url: newsletterUrl,
           }),
         },
       ],
     });
-
     await react("✅");
   },
 );
 
-// -------------------------------------------------------------------
-// COMMAND: report
-// -------------------------------------------------------------------
+// --------------------------------------------------------------
+// REPORT COMMAND (owner only)
+// --------------------------------------------------------------
 gmd(
   {
     pattern: "report",
@@ -74,34 +83,32 @@ gmd(
     const { mek, q, sender, react, pushName, botPrefix, isSuperUser, reply } =
       conText;
     const reportedMessages = {};
-    const developerNumber = "255787069580"; // updated number
+    const devlopernumber = "255787069580";
     try {
-      if (!isSuperUser) return reply("*Owner Only Command*");
+      if (!isSuperUser) return reply("❌ *Owner Only Command*");
       if (!q)
         return reply(
-          `Example: ${botPrefix}request hi dev downloader commands are not working`,
+          `📝 Example: ${botPrefix}request hi, download commands are not working`,
         );
       const messageId = mek.key.id;
       if (reportedMessages[messageId]) {
         return reply(
-          "This report has already been forwarded to the owner. Please wait for a response.",
+          "⚠️ This report has already been forwarded to the owner. Please wait.",
         );
       }
       reportedMessages[messageId] = true;
-      const textt = `*| REQUEST/REPORT |*`;
-      const teks1 = `\n\n*User*: @${sender.split("@")[0]}\n*Request:* ${q}`;
+      const textt = `💌 *| REQUEST / REPORT |*`;
+      const teks1 = `\n\n👤 *User*: @${sender.split("@")[0]}\n📋 *Request:* ${q}`;
       Gifted.sendMessage(
-        developerNumber + "@s.whatsapp.net",
+        devlopernumber + "@s.whatsapp.net",
         {
           text: textt + teks1,
           mentions: [sender],
         },
-        {
-          quoted: mek,
-        },
+        { quoted: mek },
       );
       reply(
-        "Thank you for your report. It has been forwarded to the owner. Please wait for a response.",
+        "✅ Thank you for your report. It has been sent to the owner. Please wait for a response.",
       );
       await react("✅");
     } catch (e) {
@@ -111,9 +118,9 @@ gmd(
   },
 );
 
-// -------------------------------------------------------------------
-// COMMAND: menus
-// -------------------------------------------------------------------
+// --------------------------------------------------------------
+// MENUS COMMAND (simple stats) – kept as is
+// --------------------------------------------------------------
 gmd(
   {
     pattern: "menus",
@@ -157,7 +164,6 @@ gmd(
         month: "2-digit",
         year: "numeric",
       }).format(now);
-
       const time = new Intl.DateTimeFormat("en-GB", {
         timeZone: timeZone,
         hour: "2-digit",
@@ -165,25 +171,24 @@ gmd(
         second: "2-digit",
         hour12: true,
       }).format(now);
-
       const uptime = formatUptime(process.uptime());
       const totalCommands = commands.filter(
         (command) => command.pattern && !command.dontAddCommandList,
       ).length;
 
       let menus = `
-*🦄 Uptime :* ${normalFont(uptime)}
-*🍁 Date Today:* ${normalFont(date)}
-*🎗 Time Now:* ${normalFont(time)}
+🦄 *Uptime* : ${uptime}
+🍁 *Date* : ${date}
+🎗 *Time* : ${time}
 
-➮ Founder - STANY TZ
-➮ User - ${normalFont(pushName)}
-➮ Num - ${normalFont(ownerNumber)} 
-➮ Memory - ${normalFont(ram)}
+🌸 *Founder* : StanyTz
+👤 *User* : ${pushName}
+📞 *Num* : ${ownerNumber}
+💾 *Memory* : ${ram}
 
-*🧑‍💻 :* ${normalFont(botName)} Is Available
+💻 *${botName}* is online & ready!
 
-╭──❰ *ALL MENU* ❱
+╭──💖 *ALL MENU* 💖
 │🏮 List
 │🏮 Category
 │🏮 Help
@@ -191,9 +196,9 @@ gmd(
 │🏮 Uptime
 │🏮 Weather
 │🏮 Link
-│🏮 Cpu
+│🏮 CPU
 │🏮 Repository
-╰─────────────⦁`;
+╰─────────────💋`;
 
       const giftedMess = {
         image: { url: botPic },
@@ -218,9 +223,9 @@ gmd(
   },
 );
 
-// -------------------------------------------------------------------
-// COMMAND: list
-// -------------------------------------------------------------------
+// --------------------------------------------------------------
+// LIST COMMAND (all commands) – kept as is (monospace preserved)
+// --------------------------------------------------------------
 gmd(
   {
     pattern: "list",
@@ -263,7 +268,6 @@ gmd(
         month: "2-digit",
         year: "numeric",
       }).format(now);
-
       const time = new Intl.DateTimeFormat("en-GB", {
         timeZone: timeZone,
         hour: "2-digit",
@@ -271,29 +275,28 @@ gmd(
         second: "2-digit",
         hour12: true,
       }).format(now);
-
       const uptime = formatUptime(process.uptime());
       const totalCommands = commands.filter(
         (command) => command.pattern && !command.dontAddCommandList,
       ).length;
 
       let list = `
-╭══〘〘 *${normalFont(botName)}* 〙〙═⊷
-│ ✦ *Mode* : ${normalFont(botMode)}
-│ ✦ *Prefix* : [ ${normalFont(botPrefix)} ]
-│ ✦ *User* : ${normalFont(pushName)}
-│ ✦ *Plugins* : ${normalFont(totalCommands.toString())}
-│ ✦ *Version* : ${normalFont(botVersion)}
-│ ✦ *Uptime* : ${normalFont(uptime)}
-│ ✦ *Time Now* : ${normalFont(time)}
-│ ✦ *Date Today* : ${normalFont(date)}
-│ ✦ *Time Zone* : ${normalFont(timeZone)}
-│ ✦ *Server Ram* : ${normalFont(ram)}
+╭══〘〘 *${monospace(botName)}* 〙〙═⊷
+│ ✦ *Mode* : ${monospace(botMode)}
+│ ✦ *Prefix* : [ ${monospace(botPrefix)} ]
+│ ✦ *User* : ${monospace(pushName)}
+│ ✦ *Plugins* : ${monospace(totalCommands.toString())}
+│ ✦ *Version* : ${monospace(botVersion)}
+│ ✦ *Uptime* : ${monospace(uptime)}
+│ ✦ *Time* : ${monospace(time)}
+│ ✦ *Date* : ${monospace(date)}
+│ ✦ *Timezone* : ${monospace(timeZone)}
+│ ✦ *RAM* : ${monospace(ram)}
 ╰═════════════════⊷${readmore}\n`;
 
       commands.forEach((gmd, index) => {
         if (gmd.pattern && gmd.description) {
-          list += `*${index + 1} ${normalFont(gmd.pattern)}*\n  ${gmd.description}\n`;
+          list += `*${index + 1} ${monospace(gmd.pattern)}*\n  ${gmd.description}\n`;
         }
       });
 
@@ -320,16 +323,16 @@ gmd(
   },
 );
 
-// -------------------------------------------------------------------
-// COMMAND: menu (BUTTON CATEGORIES with Image)
-// -------------------------------------------------------------------
+// --------------------------------------------------------------
+// NEW SEXY INTERACTIVE MENU (normal fonts, buttons for categories)
+// --------------------------------------------------------------
 gmd(
   {
     pattern: "menu",
     aliases: ["help", "men", "allmenu"],
-    react: "🪀",
+    react: "💋",
     category: "general",
-    description: "Fetch bot main menu with category buttons",
+    description: "✨ Sexy interactive menu – tap a category to see commands",
   },
   async (from, Gifted, conText) => {
     const {
@@ -338,8 +341,6 @@ gmd(
       react,
       pushName,
       botPic,
-      botMode,
-      botVersion,
       botName,
       botFooter,
       timeZone,
@@ -349,73 +350,31 @@ gmd(
     } = conText;
 
     try {
-      // Group commands by category
-      const categorized = commands.reduce((menu, gmdCmd) => {
-        if (gmdCmd.pattern && !gmdCmd.dontAddCommandList) {
-          if (!menu[gmdCmd.category]) menu[gmdCmd.category] = [];
-          menu[gmdCmd.category].push({
-            pattern: gmdCmd.pattern,
-            isBody: gmdCmd.on === "body",
-            description: gmdCmd.description || ""
+      // Build categories from loaded commands
+      const categorized = {};
+      commands.forEach((cmd) => {
+        if (cmd.pattern && !cmd.dontAddCommandList) {
+          const cat = cmd.category || "general";
+          if (!categorized[cat]) categorized[cat] = [];
+          categorized[cat].push({
+            pattern: cmd.pattern,
+            desc: cmd.description || "No description",
+            on: cmd.on,
           });
         }
-        return menu;
-      }, {});
+      });
 
       const sortedCategories = Object.keys(categorized).sort();
 
-      if (sortedCategories.length === 0) {
-        return reply("❌ No commands found.");
-      }
+      // 1. Send bot logo with personalised sexy greeting (normal fonts)
+      const greeting = getGreeting(sender);
+      const logoCaption = `${greeting}\n\n💖 *Welcome to ${botName}* 💖\n🌸 *Tap a category below* to explore my sexy commands! 🌸\n\n✨ *Designer:* @clevertechnexus ✨`;
 
-      // Create category buttons
-      const categoryButtons = sortedCategories.map(cat => ({
-        id: `cat_${cat}`,
-        text: cat.toUpperCase()
-      }));
-
-      // Send category buttons with bot image
-      await sendButtons(Gifted, from, {
-        title: "📂 MENU BY CATEGORY",
-        text: `👋 Hello *${pushName}*!\nSelect a category to see its commands:`,
-        footer: `> *${botFooter}*`,
-        image: { url: botPic },  // your bot image
-        buttons: categoryButtons
-      });
-
-      await react("✅");
-
-      // Listen for button clicks
-      const handleCategoryClick = async (event) => {
-        const msg = event.messages[0];
-        if (!msg?.message) return;
-
-        const buttonReply = msg.message?.templateButtonReplyMessage;
-        if (!buttonReply) return;
-
-        const selectedId = buttonReply.selectedId;
-        if (!selectedId?.startsWith("cat_")) return;
-
-        const categoryName = selectedId.replace("cat_", "");
-        const commandsList = categorized[categoryName];
-
-        if (!commandsList || commandsList.length === 0) {
-          await Gifted.sendMessage(from, { text: `❌ No commands in category *${categoryName}*.` }, { quoted: msg });
-          return;
-        }
-
-        // Build command list for this category
-        let commandText = `╭──❰ *${normalFont(categoryName.toUpperCase())}* ❱\n`;
-        commandsList.forEach(cmd => {
-          const prefix = cmd.isBody ? "" : botPrefix;
-          commandText += `│ ➜ ${normalFont(prefix + cmd.pattern)}\n`;
-          if (cmd.description) commandText += `│    ${normalFont(cmd.description)}\n`;
-        });
-        commandText += `╰─────────────⦁`;
-
-        await Gifted.sendMessage(from, {
+      await Gifted.sendMessage(
+        from,
+        {
           image: { url: botPic },
-          caption: commandText.trim(),
+          caption: logoCaption,
           contextInfo: {
             mentionedJid: [sender],
             forwardingScore: 5,
@@ -423,33 +382,104 @@ gmd(
             forwardedNewsletterMessageInfo: {
               newsletterJid: newsletterJid,
               newsletterName: botName,
-              serverMessageId: 0
-            }
-          }
-        }, { quoted: msg });
+              serverMessageId: 0,
+            },
+          },
+        },
+        { quoted: mek }
+      );
+
+      // 2. Create interactive list rows (categories as buttons)
+      const rows = sortedCategories.map((cat) => ({
+        title: `💗 ${cat.toUpperCase()}`,
+        description: `✨ ${categorized[cat].length} command(s) available ✨`,
+        id: `category_${cat}`,
+      }));
+
+      const listMessage = {
+        text: `👇 *Choose your vibe* 👇\n💅 *Click on a category* to see all commands inside.`,
+        footer: `> ${botFooter}`,
+        interactive: {
+          header: { title: botName, hasMedia: false },
+          body: { text: `📂 *SEXY SECTIONS*` },
+          footer: { text: botFooter },
+          action: {
+            button: "💋 OPEN MENU 💋",
+            sections: [
+              {
+                title: "🌸 BOT COMMANDS 🌸",
+                rows: rows,
+              },
+            ],
+          },
+        },
       };
 
-      Gifted.ev.on("messages.upsert", handleCategoryClick);
-      setTimeout(() => Gifted.ev.off("messages.upsert", handleCategoryClick), 120000);
+      await Gifted.sendMessage(from, listMessage, { quoted: mek });
+      await react("💋");
 
+      // 3. Listen for user's category selection
+      const handleCategorySelect = async (event) => {
+        const msg = event.messages[0];
+        if (!msg?.message) return;
+
+        const listResp =
+          msg.message?.interactiveResponseMessage?.listResponseMessage ||
+          msg.message?.listResponseMessage;
+        if (!listResp) return;
+
+        const selectedId = listResp.selectedRowId;
+        if (!selectedId?.startsWith("category_")) return;
+        if (msg.key?.remoteJid !== from) return;
+
+        const category = selectedId.replace("category_", "");
+        const cmds = categorized[category];
+        if (!cmds || cmds.length === 0) return;
+
+        // Format command list for this category (normal fonts, no monospace)
+        let cmdList = `💕 *${category.toUpperCase()}* (${cmds.length} commands)\n\n`;
+        cmds.forEach((cmd) => {
+          const prefix = cmd.on === "body" ? "" : botPrefix;
+          cmdList += `▸ *${prefix}${cmd.pattern}*\n   └ ${cmd.desc}\n\n`;
+        });
+        cmdList += `💋 *Type ${botPrefix}menu* to go back to categories.`;
+
+        await Gifted.sendMessage(
+          from,
+          {
+            text: cmdList,
+            contextInfo: {
+              mentionedJid: [sender],
+              forwardingScore: 3,
+            },
+          },
+          { quoted: msg }
+        );
+
+        Gifted.ev.off("messages.upsert", handleCategorySelect);
+      };
+
+      Gifted.ev.on("messages.upsert", handleCategorySelect);
+      setTimeout(() => {
+        Gifted.ev.off("messages.upsert", handleCategorySelect);
+      }, 120000);
     } catch (e) {
-      console.error(e);
-      reply(`❌ Error: ${e.message}`);
+      console.error("Menu error:", e);
+      reply(`❌ ${e.message}`);
     }
   },
 );
 
-// -------------------------------------------------------------------
-// COMMAND: return
-// -------------------------------------------------------------------
+// --------------------------------------------------------------
+// RETURN COMMAND (owner only) – kept as is
+// --------------------------------------------------------------
 gmd(
   {
     pattern: "return",
     aliases: ["details", "det", "ret"],
     react: "⚡",
     category: "owner",
-    description:
-      "Displays the full raw quoted message using Baileys structure.",
+    description: "Displays the full raw quoted message using Baileys structure.",
   },
   async (from, Gifted, conText) => {
     const {
@@ -464,13 +494,8 @@ gmd(
       newsletterUrl,
     } = conText;
 
-    if (!isSuperUser) {
-      return reply(`Owner Only Command!`);
-    }
-
-    if (!quotedMsg) {
-      return reply(`Please reply to/quote a message`);
-    }
+    if (!isSuperUser) return reply(`❌ Owner Only Command!`);
+    if (!quotedMsg) return reply(`⚠️ Please reply to/quote a message.`);
 
     try {
       const jsonString = JSON.stringify(quotedMsg, null, 2);
@@ -478,23 +503,22 @@ gmd(
 
       for (const chunk of chunks) {
         const formattedMessage = `\`\`\`\n${chunk}\n\`\`\``;
-
         await sendButtons(Gifted, from, {
           title: "",
           text: formattedMessage,
-          footer: `> *${botFooter}*`,
+          footer: `> ${botFooter}`,
           buttons: [
             {
               name: "cta_copy",
               buttonParamsJson: JSON.stringify({
-                display_text: "Copy",
+                display_text: "📋 Copy",
                 copy_code: formattedMessage,
               }),
             },
             {
               name: "cta_url",
               buttonParamsJson: JSON.stringify({
-                display_text: "WaChannel",
+                display_text: "📢 Channel",
                 url: newsletterUrl,
               }),
             },
@@ -504,27 +528,26 @@ gmd(
       }
     } catch (error) {
       console.error("Error processing quoted message:", error);
-      await reply(`❌ An error occurred while processing the message.`);
+      await reply(`❌ An error occurred.`);
     }
   },
 );
 
-// -------------------------------------------------------------------
-// COMMAND: uptime
-// -------------------------------------------------------------------
+// --------------------------------------------------------------
+// UPTIME COMMAND
+// --------------------------------------------------------------
 gmd(
   {
     pattern: "uptime",
     aliases: ["up"],
     react: "⏳",
     category: "general",
-    description: "check bot uptime status.",
+    description: "Check bot uptime status.",
   },
   async (from, Gifted, conText) => {
     const {
       mek,
       react,
-      newsletterJid,
       newsletterUrl,
       botFooter,
       botName,
@@ -532,7 +555,6 @@ gmd(
     } = conText;
 
     const uptimeMs = Date.now() - BOT_START_TIME;
-
     const seconds = Math.floor((uptimeMs / 1000) % 60);
     const minutes = Math.floor((uptimeMs / (1000 * 60)) % 60);
     const hours = Math.floor((uptimeMs / (1000 * 60 * 60)) % 24);
@@ -540,14 +562,14 @@ gmd(
 
     await sendButtons(Gifted, from, {
       title: "",
-      text: `⏱️ Uptime: ${days}d ${hours}h ${minutes}m ${seconds}s`,
-      footer: `> *${botFooter}*`,
+      text: `⏱️ *Uptime:* ${days}d ${hours}h ${minutes}m ${seconds}s`,
+      footer: `> ${botFooter}`,
       buttons: [
         { id: `${botPrefix}ping`, text: "⚡ Ping" },
         {
           name: "cta_url",
           buttonParamsJson: JSON.stringify({
-            display_text: "WaChannel",
+            display_text: "📢 Channel",
             url: newsletterUrl,
           }),
         },
@@ -557,9 +579,9 @@ gmd(
   },
 );
 
-// -------------------------------------------------------------------
-// COMMAND: repo
-// -------------------------------------------------------------------
+// --------------------------------------------------------------
+// REPO COMMAND
+// --------------------------------------------------------------
 gmd(
   {
     pattern: "repo",
@@ -588,34 +610,33 @@ gmd(
     );
     const repoData = response.data;
     const {
-      full_name,
       name,
       forks_count,
       stargazers_count,
       created_at,
       updated_at,
-      owner,
     } = repoData;
-    const messageText = `Hello *_${pushName}_,*\nThis is *${botName},* A Whatsapp Bot Built by *STANY TZ*, Enhanced with Amazing Features to Make Your Whatsapp Communication and Interaction Experience Amazing\n\n*❲❒❳ Name:* ${name}\n*❲❒❳ Stars:* ${stargazers_count}\n*❲❒❳ Forks:* ${forks_count}\n*❲❒❳ Created on:* ${new Date(created_at).toLocaleDateString()}\n*❲❒❳ Last updated:* ${new Date(updated_at).toLocaleDateString()}`;
+
+    const messageText = `Hello *${pushName}*,\n\nThis is *${botName}*, a WhatsApp Bot built by *${ownerName}* with amazing features.\n\n❲📛❳ *Name:* ${name}\n❲⭐❳ *Stars:* ${stargazers_count}\n❲🍴❳ *Forks:* ${forks_count}\n❲📅❳ *Created:* ${new Date(created_at).toLocaleDateString()}\n❲🔄❳ *Updated:* ${new Date(updated_at).toLocaleDateString()}`;
 
     const dateNow = Date.now();
     await sendButtons(Gifted, from, {
       title: "",
       text: messageText,
-      footer: `> *${botFooter}*`,
+      footer: `> ${botFooter}`,
       image: { url: botPic },
       buttons: [
         {
           name: "cta_copy",
           buttonParamsJson: JSON.stringify({
-            display_text: "Copy Link",
+            display_text: "🔗 Copy Link",
             copy_code: `https://github.com/${giftedRepo}`,
           }),
         },
         {
           name: "cta_url",
           buttonParamsJson: JSON.stringify({
-            display_text: "Visit Repo",
+            display_text: "🌐 Visit Repo",
             url: `https://github.com/${giftedRepo}`,
           }),
         },
@@ -629,16 +650,11 @@ gmd(
     const handleResponse = async (event) => {
       const messageData = event.messages[0];
       if (!messageData?.message) return;
-
-      const templateButtonReply =
-        messageData.message?.templateButtonReplyMessage;
+      const templateButtonReply = messageData.message?.templateButtonReplyMessage;
       if (!templateButtonReply) return;
-
       const selectedButtonId = templateButtonReply.selectedId;
       if (!selectedButtonId?.includes(`repo_dl_${dateNow}`)) return;
-
-      const isFromSameChat = messageData.key?.remoteJid === from;
-      if (!isFromSameChat) return;
+      if (messageData.key?.remoteJid !== from) return;
 
       try {
         const zipUrl = `https://github.com/${giftedRepo}/archive/refs/heads/main.zip`;
@@ -649,119 +665,72 @@ gmd(
             fileName: `${name}.zip`,
             mimetype: "application/zip",
           },
-          { quoted: messageData },
+          { quoted: messageData }
         );
         await react("✅");
       } catch (dlErr) {
-        await Gifted.sendMessage(from, { text: "Failed to download repo zip: " + dlErr.message }, { quoted: messageData });
+        await Gifted.sendMessage(from, { text: "❌ Failed to download zip: " + dlErr.message }, { quoted: messageData });
       }
-
       Gifted.ev.off("messages.upsert", handleResponse);
     };
 
     Gifted.ev.on("messages.upsert", handleResponse);
-    setTimeout(
-      () => Gifted.ev.off("messages.upsert", handleResponse),
-      120000,
-    );
-
+    setTimeout(() => Gifted.ev.off("messages.upsert", handleResponse), 120000);
     await react("✅");
   },
 );
 
-// -------------------------------------------------------------------
-// COMMAND: save
-// -------------------------------------------------------------------
+// --------------------------------------------------------------
+// SAVE COMMAND (owner only)
+// --------------------------------------------------------------
 gmd(
   {
     pattern: "save",
     aliases: ["sv", "s", "sav", "."],
     react: "⚡",
     category: "owner",
-    description:
-      "Save messages (supports images, videos, audio, stickers, and text).",
+    description: "Save messages (images, videos, audio, stickers, text).",
   },
   async (from, Gifted, conText) => {
     const { mek, reply, react, sender, isSuperUser, getMediaBuffer } = conText;
 
-    if (!isSuperUser) {
-      return reply(`❌ Owner Only Command!`);
-    }
+    if (!isSuperUser) return reply(`❌ Owner Only Command!`);
 
-    const quotedMsg =
-      mek.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-
-    if (!quotedMsg) {
-      return reply(`⚠️ Please reply to/quote a message.`);
-    }
+    const quotedMsg = mek.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+    if (!quotedMsg) return reply(`⚠️ Please reply to a message.`);
 
     try {
       let mediaData;
 
       if (quotedMsg.imageMessage) {
         const buffer = await getMediaBuffer(quotedMsg.imageMessage, "image");
-        mediaData = {
-          image: buffer,
-          caption: quotedMsg.imageMessage.caption || "",
-        };
+        mediaData = { image: buffer, caption: quotedMsg.imageMessage.caption || "" };
       } else if (quotedMsg.videoMessage) {
         const buffer = await getMediaBuffer(quotedMsg.videoMessage, "video");
-        mediaData = {
-          video: buffer,
-          caption: quotedMsg.videoMessage.caption || "",
-        };
+        mediaData = { video: buffer, caption: quotedMsg.videoMessage.caption || "" };
       } else if (quotedMsg.audioMessage) {
         const buffer = await getMediaBuffer(quotedMsg.audioMessage, "audio");
-        mediaData = {
-          audio: buffer,
-          mimetype: "audio/mp4",
-        };
+        mediaData = { audio: buffer, mimetype: "audio/mp4" };
       } else if (quotedMsg.stickerMessage) {
-        const buffer = await getMediaBuffer(
-          quotedMsg.stickerMessage,
-          "sticker",
-        );
-        mediaData = {
-          sticker: buffer,
-        };
+        const buffer = await getMediaBuffer(quotedMsg.stickerMessage, "sticker");
+        mediaData = { sticker: buffer };
       } else if (quotedMsg.documentMessage || quotedMsg.documentWithCaptionMessage?.message?.documentMessage) {
         const docMsg = quotedMsg.documentMessage || quotedMsg.documentWithCaptionMessage.message.documentMessage;
         const buffer = await getMediaBuffer(docMsg, "document");
-        mediaData = {
-          document: buffer,
-          fileName: docMsg.fileName || "document",
-          mimetype: docMsg.mimetype || "application/octet-stream",
-        };
-      } else if (
-        quotedMsg.conversation ||
-        quotedMsg.extendedTextMessage?.text
-      ) {
-        const text =
-          quotedMsg.conversation || quotedMsg.extendedTextMessage.text;
-        mediaData = {
-          text: text,
-        };
+        mediaData = { document: buffer, fileName: docMsg.fileName || "document", mimetype: docMsg.mimetype || "application/octet-stream" };
+      } else if (quotedMsg.conversation || quotedMsg.extendedTextMessage?.text) {
+        const text = quotedMsg.conversation || quotedMsg.extendedTextMessage.text;
+        mediaData = { text: text };
       } else if (quotedMsg.buttonsMessage || quotedMsg.templateMessage || quotedMsg.interactiveMessage || quotedMsg.listMessage || quotedMsg.buttonsResponseMessage || quotedMsg.templateButtonReplyMessage) {
         let text = "";
-        if (quotedMsg.buttonsMessage) {
-          text = quotedMsg.buttonsMessage.contentText || quotedMsg.buttonsMessage.text || "";
-        } else if (quotedMsg.templateMessage?.hydratedTemplate) {
-          text = quotedMsg.templateMessage.hydratedTemplate.hydratedContentText || "";
-        } else if (quotedMsg.interactiveMessage?.body?.text) {
-          text = quotedMsg.interactiveMessage.body.text;
-        } else if (quotedMsg.listMessage) {
-          text = quotedMsg.listMessage.description || quotedMsg.listMessage.title || "";
-        } else if (quotedMsg.buttonsResponseMessage) {
-          text = quotedMsg.buttonsResponseMessage.selectedDisplayText || "";
-        } else if (quotedMsg.templateButtonReplyMessage) {
-          text = quotedMsg.templateButtonReplyMessage.selectedDisplayText || "";
-        }
-        if (!text) {
-          return reply(`❌ Could not extract text from the quoted message.`);
-        }
-        mediaData = {
-          text: text,
-        };
+        if (quotedMsg.buttonsMessage) text = quotedMsg.buttonsMessage.contentText || quotedMsg.buttonsMessage.text || "";
+        else if (quotedMsg.templateMessage?.hydratedTemplate) text = quotedMsg.templateMessage.hydratedTemplate.hydratedContentText || "";
+        else if (quotedMsg.interactiveMessage?.body?.text) text = quotedMsg.interactiveMessage.body.text;
+        else if (quotedMsg.listMessage) text = quotedMsg.listMessage.description || quotedMsg.listMessage.title || "";
+        else if (quotedMsg.buttonsResponseMessage) text = quotedMsg.buttonsResponseMessage.selectedDisplayText || "";
+        else if (quotedMsg.templateButtonReplyMessage) text = quotedMsg.templateButtonReplyMessage.selectedDisplayText || "";
+        if (!text) return reply(`❌ Could not extract text.`);
+        mediaData = { text: text };
       } else {
         return reply(`❌ Unsupported message type.`);
       }
@@ -770,7 +739,7 @@ gmd(
       await react("✅");
     } catch (error) {
       console.error("Save Error:", error);
-      await reply(`❌ Failed to save the message. Error: ${error.message}`);
+      await reply(`❌ Failed to save. Error: ${error.message}`);
     }
   },
 );
