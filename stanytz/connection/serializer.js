@@ -148,7 +148,7 @@ const serializeMessage = async (ms, Gifted, settings = {}) => {
         command,
         args,
         q: args.join(' '),
-        pushName: ms.pushName || (ms.key.fromMe ? Gifted.user?.name : null) || 'MIA🍑KHALIFA user',
+        pushName: ms.pushName || (ms.key.fromMe ? Gifted.user?.name : null) || 'MIA🍑KHALIFA User',
         quoted,
         repliedMessage,
         mentionedJid,
