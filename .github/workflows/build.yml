@@ -1,0 +1,26 @@
+name: Auto Build core.bin and Publish to Public Repo
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build binary using Docker
+        run: |
+          docker build -f Dockerfile.build -t builder .
+          docker run --rm -v $(pwd):/out builder cp /app/core.bin /out/
+
+      - name: Create Release in Public Repo (mia-khalifa2.1)
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          repository: Stanytz378/mia-khalifa2.1
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          files: core.bin
