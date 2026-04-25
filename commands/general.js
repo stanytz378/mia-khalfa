@@ -1,4 +1,4 @@
-const { gmd, commands, normalFont, formatBytes } = require("stanytz"),
+const { gmd, commands, normalFont, formatBytes } = require("../stanytz"),
   fs = require("fs"),
   axios = require("axios"),
   BOT_START_TIME = Date.now(),
