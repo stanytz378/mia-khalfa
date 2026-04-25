@@ -1,1 +1,1 @@
-web: node stany.js
+web: npm start
