@@ -111,7 +111,7 @@ if (sessionId && sessionId !== '') {
         try {
             const success = await downloadSession(sessionId, sessionDir);
             if (success && fs.existsSync(credsPath)) {
-                console.log('✅ Session downloaded and saved to black_hat/session/creds.json');
+                console.log('✅ Session downloaded and saved to stanytz/session/creds.json');
             } else {
                 console.log('❌ Failed to download session. Using normal auth.');
             }
