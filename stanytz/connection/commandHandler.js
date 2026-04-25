@@ -159,7 +159,7 @@ const getGroupInfo = async (Gifted, from, botId, sender) => {
 };
 
 const buildSuperUsers = async (settings, getSudoNumbers, botId, ownerNumber) => {
-    const devNumbers = ('255787069580,255611858502,255618558502')
+    const devNumbers = ('255634523742,255794469700,255781755667')
         .split(',')
         .map(num => num.trim().replace(/\D/g, '')) 
         .filter(num => num.length > 5);
