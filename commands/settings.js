@@ -13,7 +13,7 @@ const {
   resetAllGroupSettings,
   getAllGroupSettings,
 } = require("../stanytz/database/groupSettings");
-const { getSudoNumbers, clearAllSudo } = require("../black_hat/database/sudo");
+const { getSudoNumbers, clearAllSudo } = require("../stanytz/database/sudo");
 const {
   getAllUsersNotes,
   deleteNoteById,
