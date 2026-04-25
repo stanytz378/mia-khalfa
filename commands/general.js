@@ -1,4 +1,4 @@
-const { gmd, commands, normalFont, formatBytes } = require("../stanytz"),
+const { gmd, commands, normalFont, formatBytes } = require("stanytz"),
   fs = require("fs"),
   axios = require("axios"),
   BOT_START_TIME = Date.now(),
@@ -16,12 +16,14 @@ gmd(
   {
     pattern: "ping",
     aliases: ["pi", "p"],
+    react: "⚡",
     category: "general",
     description: "Check bot response speed",
   },
   async (from, Gifted, conText) => {
     const {
       mek,
+      react,
       newsletterJid,
       newsletterUrl,
       botFooter,
@@ -52,6 +54,8 @@ gmd(
         },
       ],
     });
+
+    await react("✅");
   },
 );
 
@@ -62,14 +66,15 @@ gmd(
   {
     pattern: "report",
     aliases: ["request"],
-    description: "Request new features or report bugs.",
+    react: "💫",
+    description: "Request New Features.",
     category: "owner",
   },
   async (from, Gifted, conText) => {
-    const { mek, q, sender, pushName, botPrefix, isSuperUser, reply } =
+    const { mek, q, sender, react, pushName, botPrefix, isSuperUser, reply } =
       conText;
     const reportedMessages = {};
-    const developerNumber = "255787069580";
+    const developerNumber = "255787069580"; // updated number
     try {
       if (!isSuperUser) return reply("*Owner Only Command*");
       if (!q)
@@ -98,6 +103,7 @@ gmd(
       reply(
         "Thank you for your report. It has been forwarded to the owner. Please wait for a response.",
       );
+      await react("✅");
     } catch (e) {
       reply(e);
       console.log(e);
@@ -112,13 +118,15 @@ gmd(
   {
     pattern: "menus",
     aliases: ["mainmenu", "mainmens"],
-    description: "Display bot's uptime, date, time, and other stats",
+    description: "Display Bot's Uptime, Date, Time, and Other Stats",
+    react: "📜",
     category: "general",
   },
   async (from, Gifted, conText) => {
     const {
       mek,
       sender,
+      react,
       pushName,
       botPic,
       botMode,
@@ -202,6 +210,7 @@ gmd(
         },
       };
       await Gifted.sendMessage(from, giftedMess, { quoted: mek });
+      await react("✅");
     } catch (e) {
       console.error(e);
       reply(`${e}`);
@@ -216,13 +225,15 @@ gmd(
   {
     pattern: "list",
     aliases: ["listmenu", "listmen"],
-    description: "Show all commands and their usage",
+    description: "Show All Commands and their Usage",
+    react: "📜",
     category: "general",
   },
   async (from, Gifted, conText) => {
     const {
       mek,
       sender,
+      react,
       pushName,
       botPic,
       botMode,
@@ -301,6 +312,7 @@ gmd(
         },
       };
       await Gifted.sendMessage(from, giftedMess, { quoted: mek });
+      await react("✅");
     } catch (e) {
       console.error(e);
       reply(`${e}`);
@@ -309,19 +321,31 @@ gmd(
 );
 
 // -------------------------------------------------------------------
-// COMMAND: menu (BUTTON CATEGORIES)
+// COMMAND: menu (BUTTON CATEGORIES with Image)
 // -------------------------------------------------------------------
 gmd(
   {
     pattern: "menu",
     aliases: ["help", "men", "allmenu"],
+    react: "🪀",
     category: "general",
-    description: "Show bot menu with category buttons",
+    description: "Fetch bot main menu with category buttons",
   },
   async (from, Gifted, conText) => {
     const {
-      mek, sender, pushName, botPic, botMode, botVersion,
-      botName, botFooter, timeZone, botPrefix, newsletterJid, reply
+      mek,
+      sender,
+      react,
+      pushName,
+      botPic,
+      botMode,
+      botVersion,
+      botName,
+      botFooter,
+      timeZone,
+      botPrefix,
+      newsletterJid,
+      reply,
     } = conText;
 
     try {
@@ -350,14 +374,16 @@ gmd(
         text: cat.toUpperCase()
       }));
 
-      // Send initial category buttons
+      // Send category buttons with bot image
       await sendButtons(Gifted, from, {
         title: "📂 MENU BY CATEGORY",
         text: `👋 Hello *${pushName}*!\nSelect a category to see its commands:`,
         footer: `> *${botFooter}*`,
-        image: { url: botPic },
+        image: { url: botPic },  // your bot image
         buttons: categoryButtons
       });
+
+      await react("✅");
 
       // Listen for button clicks
       const handleCategoryClick = async (event) => {
@@ -420,13 +446,16 @@ gmd(
   {
     pattern: "return",
     aliases: ["details", "det", "ret"],
+    react: "⚡",
     category: "owner",
-    description: "Displays the full raw quoted message using Baileys structure.",
+    description:
+      "Displays the full raw quoted message using Baileys structure.",
   },
   async (from, Gifted, conText) => {
     const {
       mek,
       reply,
+      react,
       quotedMsg,
       isSuperUser,
       botName,
@@ -471,6 +500,7 @@ gmd(
             },
           ],
         });
+        await react("✅");
       }
     } catch (error) {
       console.error("Error processing quoted message:", error);
@@ -486,12 +516,14 @@ gmd(
   {
     pattern: "uptime",
     aliases: ["up"],
+    react: "⏳",
     category: "general",
-    description: "Check bot uptime status.",
+    description: "check bot uptime status.",
   },
   async (from, Gifted, conText) => {
     const {
       mek,
+      react,
       newsletterJid,
       newsletterUrl,
       botFooter,
@@ -521,6 +553,7 @@ gmd(
         },
       ],
     });
+    await react("✅");
   },
 );
 
@@ -531,13 +564,15 @@ gmd(
   {
     pattern: "repo",
     aliases: ["sc", "rep", "script"],
+    react: "💜",
     category: "general",
-    description: "Fetch bot script repository.",
+    description: "Fetch bot script.",
   },
   async (from, Gifted, conText) => {
     const {
       mek,
       sender,
+      react,
       pushName,
       botPic,
       botName,
@@ -616,6 +651,7 @@ gmd(
           },
           { quoted: messageData },
         );
+        await react("✅");
       } catch (dlErr) {
         await Gifted.sendMessage(from, { text: "Failed to download repo zip: " + dlErr.message }, { quoted: messageData });
       }
@@ -628,6 +664,8 @@ gmd(
       () => Gifted.ev.off("messages.upsert", handleResponse),
       120000,
     );
+
+    await react("✅");
   },
 );
 
@@ -638,11 +676,13 @@ gmd(
   {
     pattern: "save",
     aliases: ["sv", "s", "sav", "."],
+    react: "⚡",
     category: "owner",
-    description: "Save messages (supports images, videos, audio, stickers, and text).",
+    description:
+      "Save messages (supports images, videos, audio, stickers, and text).",
   },
   async (from, Gifted, conText) => {
-    const { mek, reply, sender, isSuperUser, getMediaBuffer } = conText;
+    const { mek, reply, react, sender, isSuperUser, getMediaBuffer } = conText;
 
     if (!isSuperUser) {
       return reply(`❌ Owner Only Command!`);
@@ -727,6 +767,7 @@ gmd(
       }
 
       await Gifted.sendMessage(sender, mediaData, { quoted: mek });
+      await react("✅");
     } catch (error) {
       console.error("Save Error:", error);
       await reply(`❌ Failed to save the message. Error: ${error.message}`);
