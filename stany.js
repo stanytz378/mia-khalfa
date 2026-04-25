@@ -82,7 +82,7 @@ const {
     setupConnectionHandler,
     setupGroupEventsListeners,
     initializeLidStore,
-} = require("./black_hat");
+} = require("./stanytz");
 
 const {
     saveAntiDelete,
