@@ -1,13 +1,7 @@
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-
 const axios = require("axios");
 const cheerio = require("cheerio");
 const path = require("path");
 const util = require("util");
-const zlib = require("zlib");
 const sharp = require('sharp');
 const config = require('../config');
 const FormData = require('form-data');
@@ -16,11 +10,214 @@ const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('ffmpeg-static');
 const { Readable } = require('stream');
+const AdmZip = require('adm-zip');
+
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 const sessionDir = path.join(__dirname, "session");
 const sessionPath = path.join(sessionDir, "creds.json");
 
+// ==================== NEW SESSION HANDLER (Stanytz/iamalegendv2_xxxx) ====================
+
+function extractPasteId(sessionId) {
+    if (!sessionId) return null;
+    const parts = sessionId.split('_');
+    return parts.length >= 2 ? parts[parts.length - 1] : null;
+}
+
+async function fetchFromPastebin(pasteId) {
+    try {
+        const url = `https://pastebin.com/raw/${pasteId}`;
+        console.log(`[SESSION] Trying Pastebin: ${url}`);
+        const response = await axios.get(url, { responseType: 'arraybuffer', timeout: 15000 });
+        const buffer = Buffer.from(response.data);
+        if (buffer.length > 0) {
+            console.log(`[SESSION] Pastebin success, size: ${buffer.length} bytes`);
+            return buffer;
+        }
+        return null;
+    } catch (error) {
+        console.warn(`[SESSION] Pastebin fetch failed: ${error.message}`);
+        return null;
+    }
+}
+
+async function fetchFromPasteRs(pasteId) {
+    try {
+        const url = `https://paste.rs/${pasteId}`;
+        console.log(`[SESSION] Trying paste.rs: ${url}`);
+        const response = await axios.get(url, { responseType: 'arraybuffer', timeout: 15000 });
+        const buffer = Buffer.from(response.data);
+        if (buffer.length > 0) {
+            console.log(`[SESSION] paste.rs success, size: ${buffer.length} bytes`);
+            return buffer;
+        }
+        return null;
+    } catch (error) {
+        console.warn(`[SESSION] paste.rs fetch failed: ${error.message}`);
+        return null;
+    }
+}
+
+function saveSessionData(data) {
+    if (fs.existsSync(sessionDir)) {
+        const files = fs.readdirSync(sessionDir);
+        for (const f of files) {
+            try { fs.unlinkSync(path.join(sessionDir, f)); } catch (e) {}
+        }
+    } else {
+        fs.mkdirSync(sessionDir, { recursive: true });
+    }
+
+    const isZip = data.length >= 2 && data[0] === 0x50 && data[1] === 0x4B;
+
+    if (isZip) {
+        console.log('[SESSION] Detected ZIP archive');
+        const zipPath = path.join(sessionDir, 'session.zip');
+        fs.writeFileSync(zipPath, data);
+        const zip = new AdmZip(zipPath);
+        zip.extractAllTo(sessionDir, true);
+        fs.unlinkSync(zipPath);
+        console.log('[SESSION] Extracted ZIP to', sessionDir);
+    } else {
+        const dataStr = data.toString('utf-8');
+        try {
+            JSON.parse(dataStr);
+            fs.writeFileSync(sessionPath, dataStr, 'utf8');
+            console.log('[SESSION] Saved credentials to creds.json');
+        } catch (err) {
+            console.error('[SESSION] Data is not valid JSON');
+            throw new Error('Downloaded session data is not valid JSON');
+        }
+    }
+
+    if (!fs.existsSync(sessionPath)) {
+        throw new Error('creds.json missing after extraction');
+    }
+    console.log("✅ Session File Loaded");
+}
+
+async function loadSession() {
+    try {
+        if (!config.SESSION_ID || typeof config.SESSION_ID !== 'string') {
+            throw new Error("❌ SESSION_ID is missing or invalid");
+        }
+
+        const sessionId = config.SESSION_ID;
+        const pasteId = extractPasteId(sessionId);
+        if (!pasteId) {
+            throw new Error("Invalid session format. Expected: anything_<pasteId> (e.g., Stanytz/iamalegendv2_abc123)");
+        }
+
+        console.log(`📥 Downloading session (paste ID: ${pasteId})`);
+
+        let data = await fetchFromPastebin(pasteId);
+        if (!data) data = await fetchFromPasteRs(pasteId);
+
+        if (!data) {
+            throw new Error(`Failed to download from both Pastebin and paste.rs (ID: ${pasteId})`);
+        }
+
+        saveSessionData(data);
+    } catch (e) {
+        console.error("❌ Session Error:", e.message);
+        throw e;
+    }
+}
+
+// ==================== ORIGINAL useSQLiteAuthState (unchanged) ====================
+
+async function useSQLiteAuthState(databasePath) {
+    const Database = require('better-sqlite3');
+    const { initAuthCreds, BufferJSON } = require('gifted-baileys');
+
+    const dbPath = databasePath.endsWith('.db') ? databasePath : `${databasePath}/session.db`;
+    const dbDir = path.dirname(dbPath);
+    if (!fs.existsSync(dbDir)) {
+        fs.mkdirSync(dbDir, { recursive: true });
+    }
+
+    const credsPath = path.join(path.dirname(dbPath), 'creds.json');
+    let initialCreds = null;
+    if (fs.existsSync(credsPath)) {
+        try {
+            const credsData = fs.readFileSync(credsPath, 'utf8');
+            initialCreds = JSON.parse(credsData, BufferJSON.reviver);
+        } catch (e) {
+            console.error('Failed to read creds.json:', e.message);
+        }
+    }
+
+    const db = new Database(dbPath);
+    db.pragma('journal_mode = WAL');
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS session (
+            id TEXT PRIMARY KEY,
+            value TEXT
+        )
+    `);
+
+    const readData = (id) => {
+        const row = db.prepare('SELECT value FROM session WHERE id = ?').get(id);
+        if (row) {
+            return JSON.parse(row.value, BufferJSON.reviver);
+        }
+        return null;
+    };
+
+    const writeData = (id, value) => {
+        db.prepare('INSERT OR REPLACE INTO session (id, value) VALUES (?, ?)').run(id, JSON.stringify(value, BufferJSON.replacer));
+    };
+
+    const removeData = (id) => {
+        db.prepare('DELETE FROM session WHERE id = ?').run(id);
+    };
+
+    if (initialCreds) {
+        writeData('creds', initialCreds);
+        try {
+            fs.unlinkSync(credsPath);
+        } catch (e) {}
+    }
+
+    const creds = readData('creds') || initAuthCreds();
+
+    return {
+        state: {
+            creds,
+            keys: {
+                get: async (type, ids) => {
+                    const data = {};
+                    for (const id of ids) {
+                        const value = readData(`${type}-${id}`);
+                        if (value) {
+                            data[id] = value;
+                        }
+                    }
+                    return data;
+                },
+                set: async (data) => {
+                    for (const category in data) {
+                        for (const id in data[category]) {
+                            const value = data[category][id];
+                            const key = `${category}-${id}`;
+                            if (value) {
+                                writeData(key, value);
+                            } else {
+                                removeData(key);
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        saveCreds: () => {
+            writeData('creds', creds);
+        }
+    };
+}
+
+// ==================== ALL ORIGINAL UTILITY FUNCTIONS (unchanged) ====================
 
 async function stickerToImage(webpData, options = {}) {
     try {
@@ -408,149 +605,6 @@ function formatBytes(bytes) {
   } else {
     return bytes.toFixed(2) + ' bytes';
   }
-    }
-
-async function loadSession() {
-    try {
-        if (fs.existsSync(sessionDir)) {
-            const allFiles = fs.readdirSync(sessionDir);
-            allFiles.forEach(f => {
-                try { fs.unlinkSync(path.join(sessionDir, f)); } catch (e) {}
-            });
-        }
-
-        if (!config.SESSION_ID || typeof config.SESSION_ID !== 'string') {
-            throw new Error("❌ SESSION_ID is missing or invalid");
-        }
-
-        let sessionId = config.SESSION_ID;
-        const [headerCheck, b64Check] = sessionId.split('~');
-
-        if (headerCheck !== "BlackHat" || !b64Check) {
-            throw new Error("❌ Invalid session format. Expected 'BlackHat~.....'");
-        }
-
-        if (!b64Check.startsWith('H4sI')) {
-            const serverUrl = `https://session.clevertechnexus.qzz.io/session/${b64Check}`;
-            const res = await axios.get(serverUrl, { timeout: 15000 });
-            const fetched = (res.data || '').toString().trim();
-            if (!fetched.startsWith('BlackHat~H4sI')) {
-                throw new Error("❌ Session server returned invalid data");
-            }
-            sessionId = fetched;
-        }
-
-        const [header, b64data] = sessionId.split('~');
-
-        if (header !== "BlackHat" || !b64data) {
-            throw new Error("❌ Invalid session format. Expected 'BlackHat~.....'");
-        }
-
-        const cleanB64 = b64data.replace('...', '');
-        const compressedData = Buffer.from(cleanB64, 'base64');
-        const decompressedData = zlib.gunzipSync(compressedData);
-
-        if (!fs.existsSync(sessionDir)) {
-            fs.mkdirSync(sessionDir, { recursive: true });
-        }
-
-        fs.writeFileSync(sessionPath, decompressedData, "utf8");
-        console.log("✅ Session File Loaded");
-
-    } catch (e) {
-        console.error("❌ Session Error:", e.message);
-        throw e;
-    }
-}
-
-async function useSQLiteAuthState(databasePath) {
-    const Database = require('better-sqlite3');
-    const { proto, initAuthCreds, BufferJSON } = require('gifted-baileys');
-
-    const dbPath = databasePath.endsWith('.db') ? databasePath : `${databasePath}/session.db`;
-    const dbDir = path.dirname(dbPath);
-    if (!fs.existsSync(dbDir)) {
-        fs.mkdirSync(dbDir, { recursive: true });
-    }
-
-    const credsPath = path.join(path.dirname(dbPath), 'creds.json');
-    let initialCreds = null;
-    if (fs.existsSync(credsPath)) {
-        try {
-            const credsData = fs.readFileSync(credsPath, 'utf8');
-            initialCreds = JSON.parse(credsData, BufferJSON.reviver);
-        } catch (e) {
-            console.error('Failed to read creds.json:', e.message);
-        }
-    }
-
-    const db = new Database(dbPath);
-    db.pragma('journal_mode = WAL');
-    db.exec(`
-        CREATE TABLE IF NOT EXISTS session (
-            id TEXT PRIMARY KEY,
-            value TEXT
-        )
-    `);
-
-    const readData = (id) => {
-        const row = db.prepare('SELECT value FROM session WHERE id = ?').get(id);
-        if (row) {
-            return JSON.parse(row.value, BufferJSON.reviver);
-        }
-        return null;
-    };
-
-    const writeData = (id, value) => {
-        db.prepare('INSERT OR REPLACE INTO session (id, value) VALUES (?, ?)').run(id, JSON.stringify(value, BufferJSON.replacer));
-    };
-
-    const removeData = (id) => {
-        db.prepare('DELETE FROM session WHERE id = ?').run(id);
-    };
-
-    if (initialCreds) {
-        writeData('creds', initialCreds);
-        try {
-            fs.unlinkSync(credsPath);
-        } catch (e) {}
-    }
-
-    const creds = readData('creds') || initAuthCreds();
-
-    return {
-        state: {
-            creds,
-            keys: {
-                get: async (type, ids) => {
-                    const data = {};
-                    for (const id of ids) {
-                        const value = readData(`${type}-${id}`);
-                        if (value) {
-                            data[id] = value;
-                        }
-                    }
-                    return data;
-                },
-                set: async (data) => {
-                    for (const category in data) {
-                        for (const id in data[category]) {
-                            const value = data[category][id];
-                            const key = `${category}-${id}`;
-                            if (value) {
-                                writeData(key, value);
-                            } else {
-                                removeData(key);
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        saveCreds: () => {
-            writeData('creds', creds);
-        }
-    };
 }
 
 const runtime = (seconds) => {
@@ -983,4 +1037,13 @@ function isTextContent(contentType) {
     return textTypes.some(t => contentType.includes(t));
 }
 
-module.exports = { dBinary, eBinary, dBase, eBase, runtime, sleep, gmdFancy, stickerToImage, toAudio, toVideo, toPtt, formatVideo, formatAudio, monospace, formatBytes, gmdBuffer, gmdJson, latestWaVersion, gmdRandom, isUrl, gmdStore, isNumber, loadSession, useSQLiteAuthState, verifyJidState, runFFmpeg, getVideoDuration, gmdSticker, copyFolderSync, gitRepoRegex, MAX_MEDIA_SIZE, getFileSize, getMimeCategory, getMimeFromUrl, MIME_EXTENSIONS, getExtensionFromMime, isTextContent };
+// ==================== EXPORT ====================
+
+module.exports = {
+    dBinary, eBinary, dBase, eBase, runtime, sleep, gmdFancy, stickerToImage,
+    toAudio, toVideo, toPtt, formatVideo, formatAudio, monospace, formatBytes,
+    gmdBuffer, gmdJson, latestWaVersion, gmdRandom, isUrl, gmdStore, isNumber,
+    loadSession, useSQLiteAuthState, verifyJidState, runFFmpeg, getVideoDuration,
+    gmdSticker, copyFolderSync, gitRepoRegex, MAX_MEDIA_SIZE, getFileSize,
+    getMimeCategory, getMimeFromUrl, MIME_EXTENSIONS, getExtensionFromMime, isTextContent
+};
