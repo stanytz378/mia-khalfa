@@ -1,6 +1,14 @@
-const { gmd, getGroupMetadata, getLidMapping } = require("../stanytz");
-const { getGroupSetting, setGroupSetting } = require("../stanytz/database/groupSettings");
+const {
+  gmd,
+  getGroupMetadata,
+  getLidMapping,
+} = require("../stanytz");
+const {
+  getGroupSetting,
+  setGroupSetting,
+} = require("../stanytz/database/groupSettings");
 
+// ---------- UNMUTE ----------
 gmd(
   {
     pattern: "unmute",
@@ -44,6 +52,7 @@ gmd(
   },
 );
 
+// ---------- MUTE ----------
 gmd(
   {
     pattern: "mute",
@@ -87,6 +96,7 @@ gmd(
   },
 );
 
+// ---------- MET (Group Metadata) ----------
 gmd(
   {
     pattern: "met",
@@ -186,6 +196,7 @@ ${allParticipants}
   },
 );
 
+// ---------- DEMOTE ----------
 gmd(
   {
     pattern: "demote",
@@ -209,7 +220,6 @@ gmd(
       groupAdmins,
       groupMetadata,
     } = conText;
-    const { getLidMapping } = require("../black_hat/connection/groupCache");
 
     if (!isGroup) return reply("❌ This command only works in groups!");
     if (!isBotAdmin) return reply("❌ Bot is not an admin in this group!");
@@ -265,7 +275,7 @@ gmd(
 
     if (!targetJid.includes("@")) targetJid += "@s.whatsapp.net";
 
-    const { isSuperUser } = require("../black_hat/database/sudo");
+    const { isSuperUser } = require("../stanytz/database/sudo");
     const targetNum = targetJid.split("@")[0];
     const isTargetSuperUser = await isSuperUser(targetJid, Gifted);
     
@@ -338,6 +348,7 @@ gmd(
   },
 );
 
+// ---------- PROMOTE ----------
 gmd(
   {
     pattern: "promote",
@@ -362,7 +373,6 @@ gmd(
       groupSuperAdmins,
       groupMetadata,
     } = conText;
-    const { getLidMapping } = require("../black_hat/connection/groupCache");
 
     if (!isGroup) return reply("❌ This command only works in groups!");
     if (!isBotAdmin) return reply("❌ Bot is not an admin in this group!");
@@ -485,6 +495,7 @@ gmd(
   },
 );
 
+// ---------- KICK ----------
 gmd(
   {
     pattern: "kick",
@@ -508,7 +519,6 @@ gmd(
       mentionedJid,
       groupMetadata,
     } = conText;
-    const { getLidMapping } = require("../black_hat/connection/groupCache");
 
     if (!isGroup) return reply("❌ This command only works in groups!");
     if (!isBotAdmin) return reply("❌ Bot is not an admin in this group!");
@@ -627,6 +637,7 @@ gmd(
   },
 );
 
+// ---------- ADD ----------
 gmd(
   {
     pattern: "add",
@@ -751,6 +762,7 @@ gmd(
   },
 );
 
+// ---------- LINK ----------
 gmd(
   {
     pattern: "link",
@@ -820,6 +832,7 @@ gmd(
   },
 );
 
+// ---------- NEWGROUP ----------
 gmd(
   {
     pattern: "newgroup",
@@ -888,6 +901,7 @@ gmd(
   },
 );
 
+// ---------- KILLGC ----------
 gmd(
   {
     pattern: "killgc",
@@ -957,6 +971,7 @@ gmd(
   },
 );
 
+// ---------- ACCEPT ----------
 gmd(
   {
     pattern: "accept",
@@ -1011,6 +1026,7 @@ gmd(
   },
 );
 
+// ---------- REJECT ----------
 gmd(
   {
     pattern: "reject",
@@ -1065,6 +1081,7 @@ gmd(
   },
 );
 
+// ---------- ACCEPTALL ----------
 gmd(
   {
     pattern: "acceptall",
@@ -1103,6 +1120,7 @@ gmd(
   },
 );
 
+// ---------- REJECTALL ----------
 gmd(
   {
     pattern: "rejectall",
@@ -1141,6 +1159,7 @@ gmd(
   },
 );
 
+// ---------- ONLINE ----------
 gmd(
   {
     pattern: "online",
@@ -1272,6 +1291,7 @@ gmd(
   },
 );
 
+// ---------- RESETLINK ----------
 gmd(
   {
     pattern: "resetlink",
@@ -1349,6 +1369,7 @@ gmd(
   },
 );
 
+// ---------- LEFT ----------
 gmd(
   {
     pattern: "left",
@@ -1399,6 +1420,7 @@ gmd(
   },
 );
 
+// ---------- LISTREQUESTS ----------
 gmd(
   {
     pattern: "listrequests",
@@ -1493,6 +1515,7 @@ gmd(
   },
 );
 
+// ---------- TOGROUPSTATUS ----------
 gmd(
   {
     pattern: "togroupstatus",
@@ -1581,6 +1604,7 @@ gmd(
   },
 );
 
+// ---------- GROUPNAME ----------
 gmd(
   {
     pattern: "groupname",
@@ -1629,6 +1653,7 @@ gmd(
   },
 );
 
+// ---------- GCDESC ----------
 gmd(
   {
     pattern: "gcdesc",
@@ -1677,6 +1702,7 @@ gmd(
   },
 );
 
+// ---------- EVERYONE ----------
 gmd(
   {
     pattern: "everyone",
@@ -1753,6 +1779,7 @@ gmd(
   },
 );
 
+// ---------- HIDETAG ----------
 gmd(
   {
     pattern: "hidetag",
@@ -1840,6 +1867,7 @@ gmd(
   },
 );
 
+// ---------- ANTIGROUPMENTION ----------
 gmd(
   {
     pattern: "antigroupmention",
@@ -1917,6 +1945,7 @@ gmd(
   },
 );
 
+// ---------- SETANTIGCMENTIONWARNLIMIT ----------
 gmd(
   {
     pattern: "setantigcmentionwarnlimit",
@@ -1973,6 +2002,7 @@ gmd(
   },
 );
 
+// ---------- TAGALL ----------
 gmd(
   {
     pattern: "tagall",
@@ -2047,6 +2077,7 @@ gmd(
   },
 );
 
+// ---------- TAGADMINS ----------
 gmd(
   {
     pattern: "tagadmins",
@@ -2118,6 +2149,7 @@ gmd(
   },
 );
 
+// ---------- ANTIPROMOTE ----------
 gmd(
   {
     pattern: "antipromote",
@@ -2151,6 +2183,7 @@ gmd(
   },
 );
 
+// ---------- ANTIDEMOTE ----------
 gmd(
   {
     pattern: "antidemote",
