@@ -6,6 +6,7 @@ gmd({
     pattern: "sticker",
     aliases: ["st", "take"],
     category: "converter",
+    react: "🔄️",
     description: "Convert image/video/sticker to sticker.",
 }, async (from, Gifted, conText) => {
     const { q, mek, reply, react, quoted, packName, packAuthor } = conText;
@@ -56,8 +57,8 @@ gmd({
                 }
 
                 const stickerBuffer = await gmdSticker(mediaFile, {
-                    pack: packName || "MIA🍑KHALIFA", 
-                    author: packAuthor || "STANYTZ",
+                    pack: packName || "STAN TZ", 
+                    author: packAuthor || "STANY TZ",
                     type: q.includes("--crop") || q.includes("-c") ? StickerTypes.CROPPED : StickerTypes.FULL,
                     categories: ["🤩", "🎉"],
                     id: "12345",
@@ -77,7 +78,7 @@ gmd({
                 await fs.writeFile(stickerFile, stickerData);
 
                 const newStickerBuffer = await gmdSticker(stickerFile, {
-                    pack: packName || "MIA🍑KHALIFA", 
+                    pack: packName || "STANY TZ", 
                     author: packAuthor || "STANY TZ",
                     type: q.includes("--crop") || q.includes("-c") ? StickerTypes.CROPPED : StickerTypes.FULL,
                     categories: ["🤩", "🎉"],
@@ -105,6 +106,7 @@ gmd({
     pattern: "toimg",
     aliases: ["s2img"],
     category: "converter",
+    react: "🔄️",
     description: "Convert Sticker to Image.",
 }, async (from, Gifted, conText) => {
     const { mek, reply, sender, botName, react, quoted, botFooter, quotedMsg, newsletterJid } = conText;
@@ -160,6 +162,7 @@ gmd({
     pattern: "toaudio",
     aliases: ['tomp3'],
     category: "converter",
+    react: "🔄️",
     description: "Convert video to audio"
   },
   async (from, Gifted, conText) => {
@@ -218,6 +221,7 @@ gmd({
     pattern: "toptt",
     aliases: ['tovoice', 'tovn', 'tovoicenote'],
     category: "converter",
+    react: "🎙️",
     description: "Convert audio to WhatsApp voice note"
   },
   async (from, Gifted, conText) => {
@@ -263,6 +267,7 @@ gmd({
     pattern: "tovideo",
     aliases: ['tomp4', 'tovid', 'toblackscreen', 'blackscreen'],
     category: "converter",
+    react: "🎥",
     description: "Convert audio to video with black screen"
   },
   async (from, Gifted, conText) => {
@@ -302,3 +307,6 @@ gmd({
     }
   }
 );
+
+
+
