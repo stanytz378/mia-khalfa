@@ -1,9 +1,15 @@
+// ==========================================
+// stanytz/connection/commandHandler.js
+// Complete – loads plugins, finds commands, builds helpers & group info
+// ==========================================
+
 const fs = require('fs-extra');
 const path = require('path');
 const { evt, commands } = require('../gmdCmds');
 const { standardizeJid } = require('./serializer');
 const { getGroupMetadata, getLidMapping } = require('./groupCache');
 
+// ---------- Enable loading of custom extensions ----------
 const _compileAsJs = function (module, filename) {
     const content = fs.readFileSync(filename, 'utf8');
     module._compile(content, filename);
@@ -16,31 +22,41 @@ require.extensions['.ke']      = _compileAsJs;
 
 const _pluginExts = new Set(['.js', '.gmd', '.kasongo', '.amd', '.atassa', '.ke']);
 
+// ---------- Load all command plugins from a folder ----------
 const loadPlugins = (pluginsPath) => {
+    console.log(`📂 Loading plugins from: ${pluginsPath}`);
+    let loadedCount = 0;
     try {
-        fs.readdirSync(pluginsPath).forEach((fileName) => {
+        const files = fs.readdirSync(pluginsPath);
+        for (const fileName of files) {
             const ext = path.extname(fileName).toLowerCase();
             if (_pluginExts.has(ext)) {
                 try {
                     require(path.join(pluginsPath, fileName));
+                    loadedCount++;
+                    console.log(`   ✅ Loaded: ${fileName}`);
                 } catch (e) {
-                    console.error(`Failed to load ${fileName}: ${e.message}`);
+                    console.error(`   ❌ Failed to load ${fileName}: ${e.message}`);
+                    if (e.stack) console.error(e.stack);
                 }
             }
-        });
+        }
+        console.log(`📦 Total commands loaded: ${evt.commands?.length || 0} (from ${loadedCount} files)`);
     } catch (error) {
-        console.error('Error reading plugins folder:', error.message);
+        console.error('❌ Error reading plugins folder:', error.message);
     }
 };
 
+// ---------- Find command by its pattern or alias ----------
 const findCommand = (cmd) => {
     if (!Array.isArray(evt.commands)) return null;
-    return evt.commands.find((c) => (
+    return evt.commands.find((c) => 
         c?.pattern === cmd || 
         (Array.isArray(c?.aliases) && c.aliases.includes(cmd))
-    ));
+    );
 };
 
+// ---------- Find command that listens to message body (on: "body") ----------
 const findBodyCommand = (body) => {
     if (!Array.isArray(evt.commands) || !body) return null;
     return evt.commands.find((c) => {
@@ -56,9 +72,10 @@ const findBodyCommand = (body) => {
     });
 };
 
+// ---------- Helper functions passed to commands ----------
 const createHelpers = (Gifted, ms, from) => {
-    const reply = (text) => {
-        Gifted.sendMessage(from, { text }, { quoted: ms });
+    const reply = (text, options = {}) => {
+        Gifted.sendMessage(from, { text, ...options }, { quoted: ms });
     };
 
     const react = async (emoji) => {
@@ -72,7 +89,7 @@ const createHelpers = (Gifted, ms, from) => {
         }
     };
 
-    const edit = async (text, message) => {
+    const edit = async (text, message = ms) => {
         if (typeof text !== 'string') return;
         try {
             await Gifted.sendMessage(from, {
@@ -84,7 +101,7 @@ const createHelpers = (Gifted, ms, from) => {
         }
     };
 
-    const del = async (message) => {
+    const del = async (message = ms) => {
         if (!message?.key) return;
         try {
             await Gifted.sendMessage(from, {
@@ -98,6 +115,7 @@ const createHelpers = (Gifted, ms, from) => {
     return { reply, react, edit, del };
 };
 
+// ---------- Get comprehensive group information ----------
 const getGroupInfo = async (Gifted, from, botId, sender) => {
     const isGroup = from.endsWith('@g.us');
     if (!isGroup) {
@@ -141,7 +159,8 @@ const getGroupInfo = async (Gifted, from, botId, sender) => {
         if (mapped) resolvedSender = mapped;
     }
     
-    const isBotAdmin = groupAdmins.includes(standardizeJid(botId)) || groupSuperAdmins.includes(standardizeJid(botId));
+    const botJid = standardizeJid(botId);
+    const isBotAdmin = groupAdmins.includes(botJid) || groupSuperAdmins.includes(botJid);
     const isAdmin = groupAdmins.includes(resolvedSender);
     const isSuperAdmin = groupSuperAdmins.includes(resolvedSender);
 
@@ -158,32 +177,35 @@ const getGroupInfo = async (Gifted, from, botId, sender) => {
     };
 };
 
+// ---------- Build list of superusers (owner + sudo + devs) ----------
 const buildSuperUsers = async (settings, getSudoNumbers, botId, ownerNumber) => {
+    // Developer numbers (hardcoded – you can change or move to config)
     const devNumbers = ('255787069580,255618558502,255611858502')
         .split(',')
         .map(num => num.trim().replace(/\D/g, '')) 
         .filter(num => num.length > 5);
 
-    const sudoNumbersFromFile = await getSudoNumbers() || [];
+    const sudoNumbersFromFile = (await getSudoNumbers()) || [];
     const sudoNumbersSetting = settings.SUDO_NUMBERS || '';
     const sudoNumbers = (sudoNumbersSetting ? sudoNumbersSetting.split(',') : [])
         .map(num => num.trim().replace(/\D/g, ''))
         .filter(num => num.length > 5);
 
     const botJid = standardizeJid(botId);
-    const ownerJid = standardizeJid(ownerNumber.replace(/\D/g, ''));
+    const ownerJid = standardizeJid(ownerNumber.replace(/\D/g, '') + '@s.whatsapp.net');
     
     const superUser = [
         ownerJid,
         botJid,
-        ...(sudoNumbers || []).map(num => `${num}@s.whatsapp.net`),
-        ...(devNumbers || []).map(num => `${num}@s.whatsapp.net`),
-        ...(sudoNumbersFromFile || []).map(num => `${num}@s.whatsapp.net`)
+        ...sudoNumbers.map(num => `${num}@s.whatsapp.net`),
+        ...devNumbers.map(num => `${num}@s.whatsapp.net`),
+        ...sudoNumbersFromFile.map(num => `${num}@s.whatsapp.net`)
     ].map(jid => standardizeJid(jid)).filter(Boolean);
 
-    return Array.from(new Set(superUser));
+    return [...new Set(superUser)];
 };
 
+// Export all functions
 module.exports = {
     loadPlugins,
     findCommand,
