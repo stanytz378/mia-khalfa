@@ -99,7 +99,6 @@ const sessionId = config.SESSION_ID || process.env.SESSION_ID || '';
 const sessionDir = path.join(__dirname, "stanytz", "session");
 const credsPath = path.join(sessionDir, "creds.json");
 
-// Function to download session safely
 async function performSessionDownload() {
     if (!sessionId || sessionId === '') return false;
     console.log('📥 Downloading session using SESSION_ID...');
@@ -119,7 +118,6 @@ async function performSessionDownload() {
     }
 }
 
-// Run session download but don't block startup
 performSessionDownload().catch(console.error);
 
 // ==================== EXPRESS SERVER ====================
@@ -237,29 +235,48 @@ async function startGifted() {
                     if (s.STARTING_MESSAGE === "true") {
                         const d = DEFAULT_SETTINGS;
                         const md = s.MODE === "public" ? "public" : "private";
+                        
+                        // ---------- Random motivation quotes (normal fonts) ----------
+                        const quotes = [
+                            "✨ *Code like a wizard, deploy like a boss.*",
+                            "🚀 *Your only limit is your mind. Keep pushing!*",
+                            "💡 *Success is the sum of small efforts, repeated day in and day out.*",
+                            "🔥 *Don't watch the clock; do what it does. Keep going.*",
+                            "🌟 *The best time to start was yesterday. The next best time is NOW.*",
+                            "💪 *Dream it. Wish it. Do it.*",
+                            "🎯 *Stay positive, work hard, make it happen.*",
+                            "🌈 *Believe you can and you're halfway there.*",
+                            "⚡ *Make today so awesome that yesterday gets jealous.*",
+                            "🌻 *Start where you are. Use what you have. Do what you can.*"
+                        ];
+                        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                        
+                        // ---------- Build normal‑font message (no fancy Unicode) ----------
                         const connectionMsg = `
-*${s.BOT_NAME || d.BOT_NAME} 𝐂𝐎𝐍𝐍𝐄𝐂𝐓𝐄𝐃*
+╔══════════════════════════╗
+║     🤖 *${s.BOT_NAME || d.BOT_NAME}* 🤖     ║
+╚══════════════════════════╝
 
-𝐏𝐫𝐞𝐟𝐢𝐱       : *[ ${s.PREFIX || d.PREFIX} ]*
-𝐏𝐥𝐮𝐠𝐢𝐧𝐬      : *${totalCommands}*
-𝐌𝐨𝐝𝐞        : *${md}*
-𝐎𝐰𝐧𝐞𝐫       : *STANY TZ (${s.OWNER_NUMBER || d.OWNER_NUMBER})*
-𝐓𝐮𝐭𝐨𝐫𝐢𝐚𝐥𝐬     : *${s.YT || d.YT}*
-𝐔𝐩𝐝𝐚𝐭𝐞𝐬      : *${s.NEWSLETTER_URL || d.NEWSLETTER_URL}*
+┌──────────────────────────┐
+│ 🔹 *Status* : ✅ Active
+│ 🔹 *Prefix* : ${s.PREFIX || d.PREFIX}
+│ 🔹 *Plugins* : ${totalCommands}
+│ 🔹 *Mode* : ${md}
+│ 🔹 *Owner* : STANY TZ (${s.OWNER_NUMBER || d.OWNER_NUMBER})
+│ 🔹 *YouTube* : ${s.YT || d.YT}
+│ 🔹 *Channel* : ${s.NEWSLETTER_URL || d.NEWSLETTER_URL}
+└──────────────────────────┘
 
-𝐍𝐨𝐭𝐞:  Bot may take some few seconds to sync before being ready.
+🎯 *Motivation for you:*
+${randomQuote}
 
-> *${s.CAPTION || d.CAPTION}*`;
-
+⏳ *Note*: The bot may take a few seconds to fully sync.
+> ${s.CAPTION || d.CAPTION}
+                        `.trim();
+                        
                         await Gifted.sendMessage(
                             Gifted.user.id,
-                            {
-                                text: connectionMsg,
-                                ...(await createContext(s.BOT_NAME || d.BOT_NAME, {
-                                    title: "BOT INTEGRATED",
-                                    body: "Status: Ready for Use",
-                                })),
-                            },
+                            { text: connectionMsg, ...(await createContext(s.BOT_NAME || d.BOT_NAME, { title: "BOT IS READY", body: "Let's rock!" })) },
                             { disappearingMessagesInChat: true, ephemeralExpiration: 300 }
                         );
                     }
