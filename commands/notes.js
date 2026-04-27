@@ -71,7 +71,7 @@ gmd(
         description: "Add a new note",
     },
     async (from, Gifted, conText) => {
-        const { sender, q, quoted } = conText;
+        const { sender, q, quoted, botPrefix } = conText;  // ← added botPrefix
 
         let noteContent = q?.trim() || "";
 
