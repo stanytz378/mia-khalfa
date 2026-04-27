@@ -8,61 +8,61 @@ const logoEndpoints = [
     description: "Glossy Silver logo",
     endpoint: "glossysilver",
   },
-    {
+  {
     pattern: "angelWing",
-    aliases: ["angelWing", "blackhat6"],
+    aliases: ["angelWing", "stanytz6"],
     description: "angelWing Silver logo",
     endpoint: "angelWing",
   },
-    {
+  {
     pattern: "facebookTypo",
-    aliases: ["facebookTypo", "blackhat5"],
+    aliases: ["facebookTypo", "stanytz5"],
     description: "facebookTypo Silver logo",
     endpoint: "facebookTypo",
   },
-    {
+  {
     pattern: "hollywoodStar",
-    aliases: ["hollywoodStar", "blackhat4"],
+    aliases: ["hollywoodStar", "stanytz4"],
     description: "hollywoodStar Silver logo",
     endpoint: "hollywoodStar",
   },
-    {
+  {
     pattern: "blueNeonLogo",
     aliases: ["blueNeonLogo", "blueneon"],
     description: "blueNeonLogo Silver logo",
     endpoint: "blueNeonLogo",
   },
-    {
+  {
     pattern: "fireworks",
-    aliases: ["fireworks", "blackhat3"],
+    aliases: ["fireworks", "stanytz3"],
     description: "fireworks Silver logo",
     endpoint: "fireworks",
   },
-    {
+  {
     pattern: "fpsGamingLogo",
-    aliases: ["fpsGamingLogo", "blackhat2"],
+    aliases: ["fpsGamingLogo", "stanytz2"],
     description: "fpsGamingLogo Silver logo",
     endpoint: "fpsGamingLogo",
   },
-          {
+  {
     pattern: "assassinLogo",
-    aliases: ["assassinLogo", "blackhat1"],
+    aliases: ["assassinLogo", "stanytz1"],
     description: "assassinLogo Style logo",
     endpoint: "assassinLogo",
   },
-        {
+  {
     pattern: "footballLogo",
     aliases: ["footballLogo", "ball"],
     description: "footballLogo Style logo",
     endpoint: "footballLogo",
   },
-      {
+  {
     pattern: "neonDevilWings",
     aliases: ["neonDevilWings", "neon"],
     description: "neonDevilWings Style logo",
     endpoint: "neonDevilWings",
   },
-    {
+  {
     pattern: "mascotShield",
     aliases: ["mascotShield", "mascot"],
     description: "mascotShield Style logo",
@@ -256,7 +256,7 @@ async function createLogoCommand(config) {
       if (!q) {
         await react("❌");
         return reply(
-          `Please provide text for the logo.\n\nUsage: .${config.pattern} <text>\nExample: .${config.pattern} ${pushname || "Clever Tech"}`,
+          `Please provide text for the logo.\n\n*Usage:* .${config.pattern} <text>\n*Example:* .${config.pattern} ${pushname || "Stany TZ"}`,
         );
       }
 
@@ -316,7 +316,7 @@ gmd(
       .join("\n");
 
     await reply(
-      `🎨 *${botName} LOGO MAKER*\n\n${logoList}\n\n📝 *Usage:* ${botPrefix}commandname <your text>\n📌 *Example:* ${botPrefix}glossysilver Clever Tech\n\n> ${botCaption}`,
+      `🎨 *${botName} LOGO MAKER*\n\n${logoList}\n\n📝 *Usage:* ${botPrefix}commandname <your text>\n📌 *Example:* ${botPrefix}glossysilver Stany TZ\n\n> ${botCaption}`,
     );
     await react("✅");
   },
