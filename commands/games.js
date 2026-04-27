@@ -55,7 +55,6 @@ const {
     getDiceEmoji,
 } = require("../stanytz/wcg");
 
-
 const {
     findWcgWord,
     rollDice: aiRollDice,
@@ -123,7 +122,6 @@ const setJoinTimeout = (chatJid, Gifted, player1) => {
             await endGame(chatJid);
             await Gifted.sendMessage(chatJid, {
                 text: `⏰ *TIC TAC TOE - TIMEOUT*\n\nNo one joined within 30 seconds.\nGame cancelled!\n\n@${getPlayerName(player1)} can start a new game with *.ttt*`,
-    
                 mentions: [player1],
             });
         }
@@ -144,7 +142,6 @@ gmd({
     if (existingActive) {
         return await Gifted.sendMessage(from, {
             text: "❌ There's already an active game in this chat!\nUse *.tttend* to end it first.",
-
         });
     }
     
@@ -152,7 +149,6 @@ gmd({
     if (existingWaiting) {
         return await Gifted.sendMessage(from, {
             text: "❌ There's already a game waiting for a player!\nType *join* to join, or use *.tttend* to cancel.",
-
         });
     }
     
@@ -211,14 +207,12 @@ gmd({
     if (!result) {
         return await Gifted.sendMessage(from, {
             text: "❌ No game waiting for players! Start one with *.ttt*",
-
         });
     }
     
     if (result.error === "same_player") {
         return await Gifted.sendMessage(from, {
             text: "❌ You can't play against yourself!",
-
         });
     }
     
@@ -244,7 +238,6 @@ gmd({
     if (!game) {
         return await Gifted.sendMessage(from, {
             text: "❌ No active game! Start one with *.ttt*",
-
         });
     }
     
@@ -269,7 +262,6 @@ gmd({
     if (existingActive) {
         return await Gifted.sendMessage(from, {
             text: "❌ There's already an active Word Chain game!\nUse *.wcgend* to end it first.",
-
         });
     }
     
@@ -277,7 +269,6 @@ gmd({
     if (existingWaiting) {
         return await Gifted.sendMessage(from, {
             text: "❌ A game is waiting for players!\nUse *.wcgjoin* to join or *.wcgend* to cancel.",
-
         });
     }
     
@@ -307,7 +298,7 @@ gmd({
         const playerList = result.players.map((p, i) => `${i + 1}. @${getPlayerName(p)}`).join('\n');
         
         await Gifted.sendMessage(from, {
-            text: `⏰ *Time's up! Game starting!*\n\n🚀 *WORD CHAIN STARTED!*\n\n👥 *Players:*\n${playerList}\n\n🔄 @${getPlayerName(result.currentTurn)}'s turn!\n*Say any word to begin!*\n\n⏰ _30 seconds per turn_`,
+            text: `⏰ *Time's up! Game starting!*\n\n🚀 *WORD CHAIN STARTED!*\n\n👥 *Players:*\n${playerList}\n\n🔄 @${getPlayerName(result.currentTurn)}'s turn!\n*Say any word to begin!*\n\n⏰ *30 seconds per turn*`,
             mentions: [...result.players, result.currentTurn],
         });
         
@@ -364,7 +355,6 @@ gmd({
     if (!waitingGame) {
         return await Gifted.sendMessage(from, {
             text: "❌ No game waiting to start!",
-
         });
     }
     
@@ -372,7 +362,6 @@ gmd({
     if (players[0] !== sender) {
         return await Gifted.sendMessage(from, {
             text: "❌ Only the host can start the game!",
-
         });
     }
     
@@ -383,14 +372,13 @@ gmd({
     if (result.error === 'not_enough_players') {
         return await Gifted.sendMessage(from, {
             text: "❌ Need at least 2 players to start!",
-
         });
     }
     
     const playerList = result.players.map((p, i) => `${i + 1}. @${getPlayerName(p)}`).join('\n');
     
     await Gifted.sendMessage(from, {
-        text: `🚀 *WORD CHAIN STARTED!*\n\n👥 *Players:*\n${playerList}\n\n🔄 @${getPlayerName(result.currentTurn)}'s turn!\n*Say any word to begin!*\n\n⏰ _30 seconds per turn_`,
+        text: `🚀 *WORD CHAIN STARTED!*\n\n👥 *Players:*\n${playerList}\n\n🔄 @${getPlayerName(result.currentTurn)}'s turn!\n*Say any word to begin!*\n\n⏰ *30 seconds per turn*`,
         mentions: [...result.players, result.currentTurn],
     });
     
@@ -447,7 +435,6 @@ gmd({
     if (!game) {
         return await Gifted.sendMessage(from, {
             text: "❌ No active Word Chain game!",
-
         });
     }
     
@@ -477,7 +464,6 @@ gmd({
     if (!q || q.trim() === '') {
         return await Gifted.sendMessage(from, {
             text: `❌ Provide a word!\n\nUsage: ${botPrefix}w <word>`,
-
         });
     }
     
@@ -487,28 +473,24 @@ gmd({
     if (result.error === 'not_your_turn') {
         return await Gifted.sendMessage(from, {
             text: "❌ It's not your turn!",
-
         });
     }
     
     if (result.error === 'word_used') {
         return await Gifted.sendMessage(from, {
             text: `❌ "${word}" has already been used!`,
-
         });
     }
     
     if (result.error === 'wrong_letter') {
         return await Gifted.sendMessage(from, {
             text: `❌ Word must start with *${result.expected.toUpperCase()}*!`,
-
         });
     }
     
     if (result.error === 'too_short') {
         return await Gifted.sendMessage(from, {
             text: "❌ Word must be at least 2 letters!",
-
         });
     }
     
@@ -520,7 +502,6 @@ gmd({
     if (updatedGame && updatedGame.isAiGame && result.nextPlayer === BOT_JID) {
         await Gifted.sendMessage(from, {
             text: `✅ *${result.word}* (+${result.word.length} pts)\n\n🤖 AI is thinking...`,
-
         });
         await handleAiWcgMoveInternal(from, Gifted, updatedGame);
         return;
@@ -547,7 +528,6 @@ async function handleAiWcgMoveInternal(from, Gifted, game) {
         await endWcgGame(from);
         await Gifted.sendMessage(from, {
             text: `🎉 *YOU WIN!*\n\n🤖 AI couldn't find a word starting with *${lastWord.slice(-1).toUpperCase()}*!\n\n📊 *Final Scores:*\n${formatScores(scores)}`,
-
         });
         return;
     }
@@ -559,7 +539,6 @@ async function handleAiWcgMoveInternal(from, Gifted, game) {
         await endWcgGame(from);
         await Gifted.sendMessage(from, {
             text: `🎉 *YOU WIN!*\n\n🤖 AI made an error!\n\n📊 *Final Scores:*\n${formatScores(scores)}`,
-
         });
         return;
     }
@@ -585,7 +564,6 @@ gmd({
     if (existingActive) {
         return await Gifted.sendMessage(from, {
             text: "❌ There's already an active Dice game!\nUse *.diceend* to end it first.",
-
         });
     }
     
@@ -593,7 +571,6 @@ gmd({
     if (existingWaiting) {
         return await Gifted.sendMessage(from, {
             text: "❌ A game is waiting for an opponent!\nUse *.dicejoin* to join or *.diceend* to cancel.",
-
         });
     }
     
@@ -611,7 +588,6 @@ gmd({
             await endDiceGame(from);
             await Gifted.sendMessage(from, {
                 text: `⏰ *DICE GAME - TIMEOUT*\n\nNo one joined within 30 seconds.\nGame cancelled!`,
-    
             });
         }
     }, 30000);
@@ -636,14 +612,12 @@ gmd({
     if (result.error === 'no_game') {
         return await Gifted.sendMessage(from, {
             text: "❌ No game waiting! Start one with *.dice*",
-
         });
     }
     
     if (result.error === 'same_player') {
         return await Gifted.sendMessage(from, {
             text: "❌ You can't play against yourself!",
-
         });
     }
     
@@ -667,7 +641,6 @@ gmd({
     if (!game) {
         return await Gifted.sendMessage(from, {
             text: "❌ No active Dice game! Start one with *.dice*",
-
         });
     }
     
@@ -677,7 +650,6 @@ gmd({
     if (result.error === 'not_your_turn') {
         return await Gifted.sendMessage(from, {
             text: "❌ It's not your turn!",
-
         });
     }
     
@@ -822,7 +794,6 @@ gmd({
     if (existingActive) {
         return await Gifted.sendMessage(from, {
             text: "❌ There's already an active game in this chat!\nUse *.tttend* to end it first.",
-
         });
     }
     
@@ -830,7 +801,6 @@ gmd({
     if (existingWaiting) {
         return await Gifted.sendMessage(from, {
             text: "❌ There's already a game waiting!\nUse *.tttend* to cancel.",
-
         });
     }
     
@@ -854,7 +824,6 @@ gmd({
     if (existingActive) {
         return await Gifted.sendMessage(from, {
             text: "❌ There's already an active Word Chain game!\nUse *.wcgend* to end it first.",
-
         });
     }
     
@@ -862,11 +831,10 @@ gmd({
     if (existingWaiting) {
         return await Gifted.sendMessage(from, {
             text: "❌ A game is waiting for players!\nUse *.wcgend* to cancel.",
-
         });
     }
     
-    const { WcgDB } = require("../black_hat/database/wcgGame");
+    const { WcgDB } = require("../stanytz/database/wcgGame");
     await WcgDB.destroy({ where: { chatJid: from } });
     
     const scores = {};
@@ -885,7 +853,7 @@ gmd({
     });
     
     await Gifted.sendMessage(from, {
-        text: `🤖 *WORD CHAIN vs AI*\n\n📜 *Rules:*\n• Each word must start with the last letter of the previous word\n• No repeating words\n• Minimum 2 letters per word\n• 30 seconds per turn\n\n👤 @${getPlayerName(sender)} vs 🤖 AI\n\n@${getPlayerName(sender)}'s turn - say any word to start!\n\n⏰ _30 seconds per turn_`,
+        text: `🤖 *WORD CHAIN vs AI*\n\n📜 *Rules:*\n• Each word must start with the last letter of the previous word\n• No repeating words\n• Minimum 2 letters per word\n• 30 seconds per turn\n\n👤 @${getPlayerName(sender)} vs 🤖 AI\n\n@${getPlayerName(sender)}'s turn - say any word to start!\n\n⏰ *30 seconds per turn*`,
         mentions: [sender],
     });
     
@@ -904,7 +872,6 @@ gmd({
     if (existingActive) {
         return await Gifted.sendMessage(from, {
             text: "❌ There's already an active Dice game!\nUse *.diceend* to end it first.",
-
         });
     }
     
@@ -912,12 +879,11 @@ gmd({
     if (existingWaiting) {
         return await Gifted.sendMessage(from, {
             text: "❌ A game is waiting!\nUse *.diceend* to cancel.",
-
         });
     }
     
     const rounds = parseInt(q) || 3;
-    const { DiceDB } = require("../black_hat/database/diceGame");
+    const { DiceDB } = require("../stanytz/database/diceGame");
     await DiceDB.destroy({ where: { chatJid: from } });
     
     await DiceDB.create({
@@ -936,7 +902,7 @@ gmd({
     });
     
     await Gifted.sendMessage(from, {
-        text: `🤖 *DICE GAME vs AI*\n\n👤 @${getPlayerName(sender)} vs 🤖 AI\n🎯 Best of ${rounds} rounds\n\n*Round 1*\n@${getPlayerName(sender)}, type *.roll* to roll!\n\n⏰ _30 seconds per turn_`,
+        text: `🤖 *DICE GAME vs AI*\n\n👤 @${getPlayerName(sender)} vs 🤖 AI\n🎯 Best of ${rounds} rounds\n\n*Round 1*\n@${getPlayerName(sender)}, type *.roll* to roll!\n\n⏰ *30 seconds per turn*`,
         mentions: [sender],
     });
     
