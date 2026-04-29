@@ -25,14 +25,14 @@ async function queryAI(endpoint, query, conText) {
 
 gmd(
   {
-    pattern: "kalifaai",
+    pattern: "stanytzai",
     aliases: ["ai"],
-    description: "Chat with blackhatai AI assistant",
+    description: "Chat with STANY TZ AI assistant",
     category: "Ai",
     filename: __filename,
   },
   async (from, Gifted, conText) => {
-    await queryAI("ai", conText.q || "say gray black hat hacker", conText);
+    await queryAI("ai", conText.q || "say hello from stanytz", conText);
   },
 );
 
@@ -123,7 +123,6 @@ gmd(
     await queryAI("geminiai", conText.q, conText);
   },
 );
-
 
 gmd(
   {
