@@ -1,3 +1,12 @@
+/**
+ *  MIA KHALIFA - WhatsApp Bot
+ *  Copyright (c) 2026 STANY TZ
+ * 
+ *  GitHub: https://github.com/Stanytz378
+ *  YouTube: https://youtube.com/@STANYTZ
+ *  WhatsApp Channel: https://whatsapp.com/channel/0029Vb7fzu4EwEjmsD4Tzs1p
+ */
+
 const moment = require("moment-timezone");
 const { getSetting } = require("../database/settings");
 const { getGroupSetting } = require("../database/groupSettings");
@@ -165,9 +174,9 @@ const setupGroupEventsListeners = (Gifted) => {
 
             const timeZone =
                 (await getSetting("TIME_ZONE")) || "Africa/Nairobi";
-            const botName = (await getSetting("BOT_NAME")) || "MIA🍑KHALIFA";
+            const botName = (await getSetting("BOT_NAME")) || "𝐒𝐓𝐀𝐍𝐘𝐓𝐙";
             const botFooter =
-                (await getSetting("FOOTER")) || "STANY TZ";
+                (await getSetting("FOOTER")) || "Powered by Clever tech nexus";
             const newsletterJid = (await getSetting("NEWSLETTER_JID")) || "";
 
             const currentTime = moment().tz(timeZone).format("h:mm A");
