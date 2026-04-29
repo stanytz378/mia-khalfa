@@ -18,7 +18,7 @@ const isSuperUser = async (jid, Gifted) => {
     return sudoNumbers.includes(num);
 };
 
-const DEFAULT_PLACEHOLDER = "https://raw.githubusercontent.com/stanytz378/stanyimagesservers/refs/heads/main/IMG_3086.jpeg";
+const DEFAULT_PLACEHOLDER = "https://files.catbox.moe/9aciic.png";
 
 const getProfilePic = async (Gifted, jid) => {
     try {
@@ -165,9 +165,9 @@ const setupGroupEventsListeners = (Gifted) => {
 
             const timeZone =
                 (await getSetting("TIME_ZONE")) || "Africa/Nairobi";
-            const botName = (await getSetting("BOT_NAME")) || "𝐁𝐋𝐀𝐂𝐊 𝐇𝐀𝐓-𝐌𝐃";
+            const botName = (await getSetting("BOT_NAME")) || "MIA🍑KHALIFA";
             const botFooter =
-                (await getSetting("FOOTER")) || "Powered by Clever tech nexus";
+                (await getSetting("FOOTER")) || "STANY TZ";
             const newsletterJid = (await getSetting("NEWSLETTER_JID")) || "";
 
             const currentTime = moment().tz(timeZone).format("h:mm A");
