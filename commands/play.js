@@ -1,3 +1,12 @@
+/**
+ *  MIA KHALIFA - WhatsApp Bot
+ *  Copyright (c) 2026 STANY TZ
+ * 
+ *  GitHub: https://github.com/Stanytz378
+ *  YouTube: https://youtube.com/@STANYTZ
+ *  WhatsApp Channel: https://whatsapp.com/channel/0029Vb7fzu4EwEjmsD4Tzs1p
+ */
+
 const { gmd, toPtt } = require("../stanytz");
 const yts = require("yt-search");
 const axios = require("axios");
@@ -56,7 +65,7 @@ gmd(
         {
           audio: convertedBuffer,
           mimetype: "audio/mpeg",
-          caption: `> *${botFooter}*`,
+          caption: `> ${botFooter}`,
         },
         { quoted: mek },
       );
@@ -99,7 +108,7 @@ gmd(
           document: buffer,
           fileName: "Video.mp4",
           mimetype: "video/mp4",
-          caption: `> *${botFooter}*`,
+          caption: `> ${botFooter}`,
         },
         { quoted: mek },
       );
@@ -222,7 +231,7 @@ gmd(
           document: convertedBuffer,
           mimetype: "audio/mpeg",
           fileName: `${firstVideo.title}.mp3`.replace(/[^\w\s.-]/gi, ""),
-          caption: `⿻ *Title:* ${firstVideo.title}\n⿻ *Duration:* ${firstVideo.timestamp}\n\n_File too large for audio streaming — sent as document_`,
+          caption: `🎵 Title: ${firstVideo.title}\n⏱️ Duration: ${firstVideo.timestamp}\n\nFile too large for audio streaming — sent as document`,
         });
         return;
       }
@@ -231,8 +240,8 @@ gmd(
       const buttonId = `play_${firstVideo.id}_${dateNow}`;
       
       await sendButtons(Gifted, from, {
-        title: `${botName} 𝐒𝐎𝐍𝐆 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃𝐄𝐑`,
-        text: `⿻ *Title:* ${firstVideo.title}\n⿻ *Duration:* ${firstVideo.timestamp}\n\n*Select download format:*`,
+        title: `${botName} • Audio Downloader`,
+        text: `🎵 Title: ${firstVideo.title}\n⏱️ Duration: ${firstVideo.timestamp}\n\nSelect download format:`,
         footer: botFooter,
         image: { url: firstVideo.thumbnail || botPic },
         buttons: [
@@ -383,7 +392,7 @@ gmd(
           document: convertedBuffer,
           mimetype: "video/mp4",
           fileName: `${firstVideo.title}.mp4`.replace(/[^\w\s.-]/gi, ""),
-          caption: `⿻ *Title:* ${firstVideo.title}\n⿻ *Duration:* ${firstVideo.timestamp}\n\n_File too large for video streaming — sent as document_`,
+          caption: `🎬 Title: ${firstVideo.title}\n⏱️ Duration: ${firstVideo.timestamp}\n\nFile too large for video streaming — sent as document`,
         });
         return;
       }
@@ -396,8 +405,8 @@ gmd(
       const buttonId = `video_${firstVideo.id}_${dateNow}`;
       
       await sendButtons(Gifted, from, {
-        title: `${botName} 𝐕𝐈𝐃𝐄𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃𝐄𝐑`,
-        text: `⿻ *Title:* ${firstVideo.title}\n⿻ *Duration:* ${firstVideo.timestamp}\n\n*Select download format:*`,
+        title: `${botName} • Video Downloader`,
+        text: `🎬 Title: ${firstVideo.title}\n⏱️ Duration: ${firstVideo.timestamp}\n\nSelect download format:`,
         footer: botFooter,
         image: { url: firstVideo.thumbnail || botPic },
         buttons: [
@@ -463,10 +472,10 @@ gmd(
         }
       };
 
-      Gifted.ev.on("messages.upsert", handleResponse);
+      Gifted.ev.on("messages.uptodate", handleResponse);
 
       setTimeout(() => {
-        Gifted.ev.off("messages.upsert", handleResponse);
+        Gifted.ev.off("messages.uptodate", handleResponse);
       }, 300000);
       
     } catch (error) {
