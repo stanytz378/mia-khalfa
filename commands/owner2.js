@@ -1,3 +1,12 @@
+/**
+ *  MIA KHALIFA - WhatsApp Bot
+ *  Copyright (c) 2026 STANY TZ
+ * 
+ *  GitHub: https://github.com/Stanytz378
+ *  YouTube: https://youtube.com/@STANYTZ
+ *  WhatsApp Channel: https://whatsapp.com/channel/0029Vb7fzu4EwEjmsD4Tzs1p
+ */
+
 const { gmd, commands, getSetting } = require("../stanytz");
 const { downloadContentFromMessage } = require("gifted-baileys");
 const FormData = require("form-data");
@@ -17,6 +26,7 @@ const {
 
 const { exec: _shellExec } = require("child_process");
 
+// ======================= $ =======================
 gmd(
   {
     pattern: "$",
@@ -46,6 +56,7 @@ gmd(
   }
 );
 
+// ======================= > =======================
 gmd(
   {
     pattern: ">",
@@ -65,8 +76,8 @@ gmd(
 
     await react("⏳");
     try {
-      const gift = require("../black_hat");
-      const _rawDb = require("../black_hat/database/database").DATABASE;
+      const gift = require("../stanytz");
+      const _rawDb = require("../stanytz/database/database").DATABASE;
       const settings = await gift.getAllSettings();
       const { getSetting, setSetting, getAllSettings, commands } = gift;
       const prefix = settings.PREFIX;
@@ -115,6 +126,7 @@ gmd(
   }
 );
 
+// ======================= R M B G =======================
 gmd(
   {
     pattern: "rmbg",
@@ -157,12 +169,12 @@ gmd(
       const blob = new Blob([buffer], { type: "image/png" });
 
       // Prepare FormData
-const form = new FormData();
+      const form = new FormData();
 
-form.append("image_file", buffer, {
-  filename: "image.png",
-  contentType: "image/png",
-});
+      form.append("image_file", buffer, {
+        filename: "image.png",
+        contentType: "image/png",
+      });
 
       // API KEY
       const API_KEY = process.env.REMOVE_BG_API || "SbjibtuwvtFPyf9Vvv1bUog9";
@@ -207,6 +219,7 @@ form.append("image_file", buffer, {
   }
 );
 
+// ======================= W A S T E D =======================
 gmd(
   {
     pattern: "wasted",
@@ -285,8 +298,7 @@ gmd(
   }
 );
 
-// ================== NEWSLETTER COMMAND (PRO + BUTTONS) ==================
-
+// ======================= N L (NEWSLETTER) =======================
 const { sendButtons } = require("gifted-btns");
 
 function extractCode(link) {
@@ -339,9 +351,10 @@ gmd(
       const channelLink = `https://whatsapp.com/channel/${code}`;
 
       let msg =
-`╭══〘〘 *📰 NEWSLETTER* 〙〙═⊷
-┃ ID: ${channelId}
-╰━━━━━━━━━━━━━━━━━━━⬣`;
+`*📰 NEWSLETTER INFO*
+
+🔹 ID: ${channelId}
+🔗 Link: ${channelLink}`;
 
       await react("✅");
 
@@ -381,6 +394,7 @@ gmd(
   }
 );
 
+// ======================= P A I R (Simple & Clean) =======================
 gmd(
   {
     pattern: "pair",
@@ -403,9 +417,14 @@ gmd(
     await react("⏳");
 
     try {
-      const url = `https://pairing-web-su41.onrender.com/code?number=${cleanNumber}&type=short`;
-
-      const { data } = await axios.get(url, { timeout: 60000 });
+      // Use STANY pairing server (works for Android, iOS, etc.)
+      const url = `https://pairing-web-yjtu.onrender.com/pair?number=${cleanNumber}`;
+      const { data } = await axios.get(url, {
+        timeout: 60000,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+      });
 
       if (!data || !data.code) {
         await react("❌");
@@ -413,22 +432,26 @@ gmd(
       }
 
       const code = data.code;
-      const fallback = data.fallback;
+      const fallback = data.fallback || false;
 
-      let msg =
-`╭══〘〘 🔗 PAIRING CODE 〙〙═⊷
-┃ 📱 Number: ${cleanNumber}
-┃ 🔑 Code: ${code}
-┃ ⚙️ Mode: ${fallback ? "Fallback" : "Short"}
-╰━━━━━━━━━━━━━━━━━━━⬣`;
+      const msg = `*🔗 PAIRING CODE*
+
+📱 Number: ${cleanNumber}
+🔑 Code: ${code}
+⚡ Mode: ${fallback ? "Fallback" : "Short"}
+
+💡 *How to use:*
+1. Open WhatsApp → Settings
+2. Tap 'Linked Devices'
+3. Tap 'Link a Device' → 'Link with phone number'
+4. Enter this code: ${code}`;
 
       await react("✅");
 
       await sendButtons(Gifted, from, {
-        title: "🔗 WHATSAPP PAIRING SYSTEM",
+        title: "🔗 WHATSAPP PAIRING",
         text: msg,
-        footer: botFooter || botName || "Bot",
-
+        footer: botFooter || botName || "STANY TZ",
         buttons: [
           {
             name: "cta_copy",
