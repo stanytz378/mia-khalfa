@@ -1,3 +1,12 @@
+/**
+ *  MIA KHALIFA - WhatsApp Bot
+ *  Copyright (c) 2026 STANY TZ
+ * 
+ *  GitHub: https://github.com/Stanytz378
+ *  YouTube: https://youtube.com/@STANYTZ
+ *  WhatsApp Channel: https://whatsapp.com/channel/0029Vb7fzu4EwEjmsD4Tzs1p
+ */
+
 const { gmd } = require("../stanytz");
 const axios = require("axios");
 const { sendButtons } = require("gifted-btns");
@@ -38,9 +47,9 @@ gmd(
 
       const r = res.data.result;
 
-      let txt = `*${botName} BIBLE*\n\n`;
-      txt += `📖 *Verse:* ${r.verse || verse}\n`;
-      txt += `📊 *Verse Count:* ${r.versesCount || 1}\n\n`;
+      let txt = `📖 *BIBLE VERSE*\n\n`;
+      txt += `📖 *Reference:* ${r.verse || verse}\n`;
+      txt += `📊 *Verses:* ${r.versesCount || 1}\n\n`;
       txt += `*English:*\n${r.data?.trim() || "N/A"}\n\n`;
 
       if (r.translations) {
