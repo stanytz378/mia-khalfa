@@ -1,3 +1,12 @@
+/**
+ *  MIA KHALIFA - WhatsApp Bot
+ *  Copyright (c) 2026 STANY TZ
+ * 
+ *  GitHub: https://github.com/Stanytz378
+ *  YouTube: https://youtube.com/@STANYTZ
+ *  WhatsApp Channel: https://whatsapp.com/channel/0029Vb7fzu4EwEjmsD4Tzs1p
+ */
+
 const { gmd } = require("../stanytz");
 const {
     initNotesDB,
@@ -71,7 +80,7 @@ gmd(
         description: "Add a new note",
     },
     async (from, Gifted, conText) => {
-        const { sender, q, quoted, botPrefix } = conText;  // ← added botPrefix
+        const { sender, q, quoted, botPrefix } = conText;
 
         let noteContent = q?.trim() || "";
 
