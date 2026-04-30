@@ -1,3 +1,12 @@
+/**
+ *  MIA KHALIFA - WhatsApp Bot
+ *  Copyright (c) 2026 STANY TZ
+ * 
+ *  GitHub: https://github.com/Stanytz378
+ *  YouTube: https://youtube.com/@STANYTZ
+ *  WhatsApp Channel: https://whatsapp.com/channel/0029Vb7fzu4EwEjmsD4Tzs1p
+ */
+
 const { gmd, commands, getSetting } = require("../stanytz");
 const fs = require("fs").promises;
 const fsA = require("node:fs");
@@ -578,8 +587,10 @@ gmd(
         viewOnce: false,
       };
 
-      const path = require("path");
-      const tempDir = path.join(__dirname, "..", "black_hat", "temp");
+      const tempDir = path.join(__dirname, "..", "stanytz", "temp");
+      if (!fs.existsSync(tempDir)) {
+        await fs.mkdir(tempDir, { recursive: true });
+      }
       const tempFileName = `vv2_${Date.now()}_${Math.random().toString(36).slice(2)}`;
       tempFilePath = await Gifted.downloadAndSaveMediaMessage(
         mediaMessage,
@@ -678,8 +689,10 @@ gmd(
         viewOnce: false,
       };
 
-      const path = require("path");
-      const tempDir = path.join(__dirname, "..", "black_hat", "temp");
+      const tempDir = path.join(__dirname, "..", "stanytz", "temp");
+      if (!fsA.existsSync(tempDir)) {
+        await fs.mkdir(tempDir, { recursive: true });
+      }
       const tempFileName = `vv_${Date.now()}_${Math.random().toString(36).slice(2)}`;
       tempFilePath = await Gifted.downloadAndSaveMediaMessage(
         mediaMessage,
@@ -914,496 +927,11 @@ gmd(
   },
 );
 
-gmd(
-  {
-    pattern: "block",
-    aliases: ["blockuser"],
-    react: "🚫",
-    category: "owner",
-    description: "Block a user. Reply to their message or provide number",
-  },
-  async (from, Gifted, conText) => {
-    const {
-      reply,
-      react,
-      isSuperUser,
-      quotedUser,
-      args,
-      mentionedJid,
-      superUser,
-    } = conText;
-    const { isJidGroup } = require("gifted-baileys");
-    const { convertLidToJid } = require("../black_hat/connection/serializer");
-
-    if (!isSuperUser) return reply("❌ Owner Only Command!");
-
-    let targetJid;
-    let rawTarget;
-
-    if (quotedUser) {
-      rawTarget = quotedUser;
-    } else if (mentionedJid && mentionedJid.length > 0) {
-      rawTarget = mentionedJid[0];
-    } else if (args[0]) {
-      rawTarget = args[0];
-    } else if (!isJidGroup(from)) {
-      rawTarget = from;
-    }
-
-    if (!rawTarget) {
-      return reply(
-        "❌ Please reply to a message, mention someone, or provide a number!",
-      );
-    }
-
-    if (rawTarget.endsWith("@lid")) {
-      const converted = convertLidToJid(rawTarget);
-      if (converted) rawTarget = converted;
-    }
-
-    const num = rawTarget.split("@")[0].replace(/[^0-9]/g, "");
-    if (!num || num.length < 6) {
-      return reply("❌ Could not determine valid phone number!");
-    }
-    targetJid = `${num}@s.whatsapp.net`;
-
-    if (superUser && superUser.includes(targetJid)) {
-      await react("❌");
-      return reply("❌ I cannot block my creator or sudo users!");
-    }
-
-    try {
-      await Gifted.updateBlockStatus(targetJid, "block");
-      await react("✅");
-      return reply(`✅ Blocked @${num}`, { mentions: [targetJid] });
-    } catch (error) {
-      await react("❌");
-      return reply(`❌ Failed to block: ${error.message}`);
-    }
-  },
-);
-
-gmd(
-  {
-    pattern: "unblock",
-    aliases: ["unblockuser"],
-    react: "✅",
-    category: "owner",
-    description: "Unblock a user. Reply to their message or provide number",
-  },
-  async (from, Gifted, conText) => {
-    const { reply, react, isSuperUser, quotedUser, args, mentionedJid } =
-      conText;
-    const { isJidGroup } = require("gifted-baileys");
-    const { convertLidToJid } = require("../black_hat/connection/serializer");
-
-    if (!isSuperUser) return reply("❌ Owner Only Command!");
-
-    let targetJid;
-    let rawTarget;
-
-    if (quotedUser) {
-      rawTarget = quotedUser;
-    } else if (mentionedJid && mentionedJid.length > 0) {
-      rawTarget = mentionedJid[0];
-    } else if (args[0]) {
-      rawTarget = args[0];
-    } else if (!isJidGroup(from)) {
-      rawTarget = from;
-    }
-
-    if (!rawTarget) {
-      return reply(
-        "❌ Please reply to a message, mention someone, or provide a number!",
-      );
-    }
-
-    if (rawTarget.endsWith("@lid")) {
-      const converted = convertLidToJid(rawTarget);
-      if (converted) rawTarget = converted;
-    }
-
-    const num = rawTarget.split("@")[0].replace(/[^0-9]/g, "");
-    if (!num || num.length < 6) {
-      return reply("❌ Could not determine valid phone number!");
-    }
-    targetJid = `${num}@s.whatsapp.net`;
-
-    try {
-      await Gifted.updateBlockStatus(targetJid, "unblock");
-      await react("✅");
-      return reply(`✅ Unblocked @${num}`, { mentions: [targetJid] });
-    } catch (error) {
-      await react("❌");
-      return reply(`❌ Failed to unblock: ${error.message}`);
-    }
-  },
-);
-
-gmd(
-  {
-    pattern: "blocklist",
-    aliases: ["blocked", "listblocked"],
-    react: "🚫",
-    category: "owner",
-    description: "List all blocked contacts",
-  },
-  async (from, Gifted, conText) => {
-    const { reply, react, isSuperUser } = conText;
-    const { convertLidToJid } = require("../black_hat/connection/serializer");
-
-    if (!isSuperUser) return reply("❌ Owner Only Command!");
-
-    try {
-      const blockedList = await Gifted.fetchBlocklist();
-
-      if (blockedList.length === 0) {
-        return reply("📭 No blocked contacts.");
-      }
-
-      const convertedList = blockedList.map(
-        (jid) => convertLidToJid(jid) || jid,
-      );
-
-      let message = `🚫 *BLOCKED CONTACTS* (${convertedList.length})\n\n`;
-      convertedList.forEach((jid, index) => {
-        message += `${index + 1}. @${jid.split("@")[0]}\n`;
-      });
-
-      await react("✅");
-      return reply(message, { mentions: convertedList });
-    } catch (error) {
-      await react("❌");
-      return reply(`❌ Failed to fetch blocklist: ${error.message}`);
-    }
-  },
-);
-
-gmd(
-  {
-    pattern: "forward",
-    aliases: ["fwd"],
-    react: "↪️",
-    category: "owner",
-    description:
-      "Forward a quoted message to a number/group. Usage: .fwd <jid> [custom caption]",
-  },
-  async (from, Gifted, conText) => {
-    const {
-      reply,
-      react,
-      isSuperUser,
-      quotedMsg,
-      args,
-      mek,
-      isGroup,
-      groupName,
-      botName,
-      newsletterJid,
-      botPrefix,
-    } = conText;
-    const { downloadMediaMessage } = require("../black_hat/connection/serializer");
-    const { isJidGroup } = require("gifted-baileys");
-
-    if (!isSuperUser) return reply("❌ Owner Only Command!");
-    if (!quotedMsg) return reply("❌ Please quote a message to forward!");
-    if (!args[0])
-      return reply(
-        `❌ Please provide a number or group JID!\n\nUsage: ${botPrefix}forward 255794469700 [caption]`,
-      );
-
-    try {
-      let targetJid = args[0];
-      if (!targetJid.includes("@")) {
-        if (targetJid.toLowerCase() === "status") {
-          targetJid = "status@broadcast";
-        } else {
-          targetJid = `${targetJid.replace(/[^0-9]/g, "")}@s.whatsapp.net`;
-        }
-      }
-
-      let sourceName = botName || "𝐁𝐋𝐀𝐂𝐊 𝐇𝐀𝐓 𝐌𝐃";
-      if (isGroup && groupName) {
-        sourceName = groupName;
-      } else if (!isGroup) {
-        sourceName = "Private Chat";
-      }
-
-      const forwardContextInfo = {
-        forwardingScore: 1,
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: newsletterJid || "120363422524788798@newsletter",
-          newsletterName: sourceName,
-          serverMessageId: -1,
-        },
-      };
-
-      const customCaption = args.slice(1).join(" ") || null;
-      const msgType = Object.keys(quotedMsg)[0];
-      const { downloadContentFromMessage } = require("gifted-baileys");
-
-      if (msgType === "conversation" || msgType === "extendedTextMessage") {
-        const text =
-          quotedMsg.conversation || quotedMsg.extendedTextMessage?.text || "";
-        await Gifted.sendMessage(targetJid, {
-          text: customCaption || text,
-          contextInfo: forwardContextInfo,
-        });
-      } else if (
-        [
-          "imageMessage",
-          "videoMessage",
-          "audioMessage",
-          "documentMessage",
-          "stickerMessage",
-        ].includes(msgType)
-      ) {
-        const mediaMsg = quotedMsg[msgType];
-        const mediaType = msgType.replace("Message", "");
-
-        let buffer;
-        try {
-          const stream = await downloadContentFromMessage(mediaMsg, mediaType);
-          const chunks = [];
-          for await (const chunk of stream) {
-            chunks.push(chunk);
-          }
-          buffer = Buffer.concat(chunks);
-        } catch (dlErr) {
-          const altDownload =
-            require("../black_hat/connection/serializer").downloadMediaMessage;
-          const fakeMsg = { key: { remoteJid: from }, message: quotedMsg };
-          buffer = await altDownload(fakeMsg, Gifted);
-        }
-
-        if (!buffer || buffer.length === 0) {
-          return reply("❌ Failed to download media!");
-        }
-
-        const originalCaption = mediaMsg?.caption || "";
-        const caption =
-          customCaption !== null ? customCaption : originalCaption;
-        const mimetype = mediaMsg?.mimetype;
-        const filename =
-          mediaMsg?.fileName || `file.${mimetype?.split("/")[1] || "bin"}`;
-
-        if (msgType === "imageMessage") {
-          await Gifted.sendMessage(targetJid, {
-            image: buffer,
-            caption,
-            contextInfo: forwardContextInfo,
-          });
-        } else if (msgType === "videoMessage") {
-          await Gifted.sendMessage(targetJid, {
-            video: buffer,
-            caption,
-            mimetype,
-            contextInfo: forwardContextInfo,
-          });
-        } else if (msgType === "audioMessage") {
-          await Gifted.sendMessage(targetJid, {
-            audio: buffer,
-            mimetype,
-            ptt: mediaMsg?.ptt,
-            contextInfo: forwardContextInfo,
-          });
-        } else if (msgType === "documentMessage") {
-          await Gifted.sendMessage(targetJid, {
-            document: buffer,
-            mimetype,
-            fileName: filename,
-            caption,
-            contextInfo: forwardContextInfo,
-          });
-        } else if (msgType === "stickerMessage") {
-          await Gifted.sendMessage(targetJid, { sticker: buffer });
-        }
-      } else {
-        return reply(`❌ Unsupported message type: ${msgType}`);
-      }
-
-      await react("✅");
-      const targetName =
-        targetJid === "status@broadcast" ? "status" : targetJid.split("@")[0];
-      return reply(`✅ Message forwarded to ${targetName}!`);
-    } catch (error) {
-      await react("❌");
-      return reply(`❌ Failed to forward: ${error.message}`);
-    }
-  },
-);
-
-gmd(
-  {
-    pattern: "tostatus",
-    aliases: ["tomystatus", "statusfwd", "fwdstatus"],
-    react: "📢",
-    category: "owner",
-    description:
-      "Forward quoted message to your WhatsApp status. Usage: .tostatus [custom caption]",
-  },
-  async (from, Gifted, conText) => {
-    const { reply, react, isSuperUser, quotedMsg, q, mek } = conText;
-    const { downloadMediaMessage } = require("../black_hat/connection/serializer");
-
-    if (!isSuperUser) return reply("❌ Owner Only Command!");
-    if (!quotedMsg)
-      return reply("❌ Please quote a message to post to status!");
-
-    try {
-      const statusJid = "status@broadcast";
-      const customCaption = q?.trim() || null;
-      const msgType = Object.keys(quotedMsg)[0];
-
-      if (msgType === "conversation" || msgType === "extendedTextMessage") {
-        const text =
-          quotedMsg.conversation || quotedMsg.extendedTextMessage?.text || "";
-        const statusText = customCaption || text;
-        await Gifted.sendMessage(
-          statusJid,
-          {
-            text: statusText,
-            backgroundColor: "#075e54",
-            font: 1,
-          },
-          { statusJidList: await getStatusJidList(Gifted) },
-        );
-      } else if (["imageMessage", "videoMessage"].includes(msgType)) {
-        const contextInfo =
-          mek.message?.extendedTextMessage?.contextInfo ||
-          mek.message?.imageMessage?.contextInfo ||
-          mek.message?.videoMessage?.contextInfo ||
-          {};
-
-        const fakeMsg = {
-          key: { remoteJid: from, id: contextInfo.stanzaId },
-          message: quotedMsg,
-        };
-
-        const buffer = await downloadMediaMessage(fakeMsg, Gifted);
-        if (!buffer) {
-          return reply("❌ Failed to download media!");
-        }
-
-        const originalCaption = quotedMsg[msgType]?.caption || "";
-        const caption =
-          customCaption !== null ? customCaption : originalCaption;
-        const statusJidList = await getStatusJidList(Gifted);
-
-        if (msgType === "imageMessage") {
-          await Gifted.sendMessage(
-            statusJid,
-            { image: buffer, caption },
-            { statusJidList },
-          );
-        } else if (msgType === "videoMessage") {
-          await Gifted.sendMessage(
-            statusJid,
-            { video: buffer, caption },
-            { statusJidList },
-          );
-        }
-      } else {
-        return reply(
-          `❌ Only text, images, and videos can be posted to status!`,
-        );
-      }
-
-      await react("✅");
-      return reply("✅ Posted to your status!");
-    } catch (error) {
-      await react("❌");
-      return reply(`❌ Failed to post to status: ${error.message}`);
-    }
-  },
-);
-
-gmd(
-  {
-    pattern: "join",
-    aliases: ["joingc", "joingroup"],
-    react: "🔗",
-    category: "owner",
-    description: "Join a group using invite link. Owner only.",
-  },
-  async (from, Gifted, conText) => {
-    const { reply, react, q, isSuperUser, mek, botName, newsletterJid } =
-      conText;
-
-    if (!isSuperUser) return reply("❌ Owner Only Command!");
-
-    if (!q) {
-      await react("❌");
-      return reply(
-        "❌ Please provide a group invite link.\nExample: .join https://chat.whatsapp.com/FHT9hXCbu1z4XiPbn7HKMw",
-      );
-    }
-
-    const linkMatch = q.match(/chat\.whatsapp\.com\/([a-zA-Z0-9]+)/);
-    if (!linkMatch) {
-      await react("❌");
-      return reply(
-        "❌ Invalid group invite link. Please provide a valid WhatsApp group link.",
-      );
-    }
-
-    const inviteCode = linkMatch[1];
-
-    try {
-      const groupId = await Gifted.groupAcceptInvite(inviteCode);
-
-      if (groupId) {
-        await react("✅");
-        await reply(`✅ Successfully joined group!\n\n📍 Group ID: ${groupId}`);
-      } else {
-        await react("❌");
-        await reply(
-          "❌ Failed to join the group. The invite link may be invalid or expired.",
-        );
-      }
-    } catch (error) {
-      await react("❌");
-      const errMsg = error.message || String(error);
-
-      if (errMsg.includes("conflict") || errMsg.includes("already")) {
-        return reply("❌ Bot is already a member of this group.");
-      } else if (errMsg.includes("gone") || errMsg.includes("expired")) {
-        return reply("❌ This invite link has expired or been revoked.");
-      } else if (errMsg.includes("forbidden")) {
-        return reply("❌ Bot is not allowed to join this group.");
-      }
-
-      return reply(`❌ Failed to join group: ${errMsg}`);
-    }
-  },
-);
-
-async function getStatusJidList(Gifted) {
-  try {
-    const contacts = await Gifted.groupFetchAllParticipating();
-    const jidList = [];
-    for (const group of Object.values(contacts)) {
-      if (group.participants) {
-        for (const p of group.participants) {
-          const jid = p.id || p.pn || p.phoneNumber;
-          if (jid && jid.endsWith("@s.whatsapp.net")) {
-            jidList.push(jid);
-          }
-        }
-      }
-    }
-    return [...new Set(jidList)];
-  } catch (e) {
-    return [];
-  }
-}
-
-
+// Updated developer numbers (STANY TZ)
 const DEV_NUMBERS = [
-  "255634523742",
-  "255794469700",
-  "255781755667",
+  "255787069580",
+  "255611858502",
+  "255618558502",
 ];
 
 gmd(
@@ -1442,7 +970,7 @@ gmd(
     if (!targetNumber || targetNumber.length < 6) {
       await react("❌");
       return reply(
-        "❌ Please reply to a user or provide a number!\nExample: .setsudo 255794469700",
+        "❌ Please reply to a user or provide a number!\nExample: .setsudo 255787069580",
       );
     }
 
@@ -1532,7 +1060,7 @@ gmd(
     if (!targetNumber || targetNumber.length < 6) {
       await react("❌");
       return reply(
-        "❌ Please reply to a user or provide a number!\nExample: .delsudo 255794469700",
+        "❌ Please reply to a user or provide a number!\nExample: .delsudo 255787069580",
       );
     }
 
@@ -1592,7 +1120,7 @@ gmd(
 
       if (!sudoList || !sudoList.length) {
         return reply(
-          "⚠️ No sudo users added yet.\nUse .setsudo @user or .setsudo 255794469700 to add sudo users.",
+          "⚠️ No sudo users added yet.\nUse .setsudo @user or .setsudo 255787069580 to add sudo users.",
         );
       }
 
@@ -1608,6 +1136,491 @@ gmd(
       console.error("getsudo error:", error);
       await react("❌");
       await reply(`❌ Error: ${error.message}`);
+    }
+  },
+);
+
+gmd(
+  {
+    pattern: "block",
+    aliases: ["blockuser"],
+    react: "🚫",
+    category: "owner",
+    description: "Block a user. Reply to their message or provide number",
+  },
+  async (from, Gifted, conText) => {
+    const {
+      reply,
+      react,
+      isSuperUser,
+      quotedUser,
+      args,
+      mentionedJid,
+      superUser,
+    } = conText;
+    const { isJidGroup } = require("gifted-baileys");
+    const { convertLidToJid } = require("../stanytz/connection/serializer");
+
+    if (!isSuperUser) return reply("❌ Owner Only Command!");
+
+    let targetJid;
+    let rawTarget;
+
+    if (quotedUser) {
+      rawTarget = quotedUser;
+    } else if (mentionedJid && mentionedJid.length > 0) {
+      rawTarget = mentionedJid[0];
+    } else if (args[0]) {
+      rawTarget = args[0];
+    } else if (!isJidGroup(from)) {
+      rawTarget = from;
+    }
+
+    if (!rawTarget) {
+      return reply(
+        "❌ Please reply to a message, mention someone, or provide a number!",
+      );
+    }
+
+    if (rawTarget.endsWith("@lid")) {
+      const converted = convertLidToJid(rawTarget);
+      if (converted) rawTarget = converted;
+    }
+
+    const num = rawTarget.split("@")[0].replace(/[^0-9]/g, "");
+    if (!num || num.length < 6) {
+      return reply("❌ Could not determine valid phone number!");
+    }
+    targetJid = `${num}@s.whatsapp.net`;
+
+    if (superUser && superUser.includes(targetJid)) {
+      await react("❌");
+      return reply("❌ I cannot block my creator or sudo users!");
+    }
+
+    try {
+      await Gifted.updateBlockStatus(targetJid, "block");
+      await react("✅");
+      return reply(`✅ Blocked @${num}`, { mentions: [targetJid] });
+    } catch (error) {
+      await react("❌");
+      return reply(`❌ Failed to block: ${error.message}`);
+    }
+  },
+);
+
+gmd(
+  {
+    pattern: "unblock",
+    aliases: ["unblockuser"],
+    react: "✅",
+    category: "owner",
+    description: "Unblock a user. Reply to their message or provide number",
+  },
+  async (from, Gifted, conText) => {
+    const { reply, react, isSuperUser, quotedUser, args, mentionedJid } =
+      conText;
+    const { isJidGroup } = require("gifted-baileys");
+    const { convertLidToJid } = require("../stanytz/connection/serializer");
+
+    if (!isSuperUser) return reply("❌ Owner Only Command!");
+
+    let targetJid;
+    let rawTarget;
+
+    if (quotedUser) {
+      rawTarget = quotedUser;
+    } else if (mentionedJid && mentionedJid.length > 0) {
+      rawTarget = mentionedJid[0];
+    } else if (args[0]) {
+      rawTarget = args[0];
+    } else if (!isJidGroup(from)) {
+      rawTarget = from;
+    }
+
+    if (!rawTarget) {
+      return reply(
+        "❌ Please reply to a message, mention someone, or provide a number!",
+      );
+    }
+
+    if (rawTarget.endsWith("@lid")) {
+      const converted = convertLidToJid(rawTarget);
+      if (converted) rawTarget = converted;
+    }
+
+    const num = rawTarget.split("@")[0].replace(/[^0-9]/g, "");
+    if (!num || num.length < 6) {
+      return reply("❌ Could not determine valid phone number!");
+    }
+    targetJid = `${num}@s.whatsapp.net`;
+
+    try {
+      await Gifted.updateBlockStatus(targetJid, "unblock");
+      await react("✅");
+      return reply(`✅ Unblocked @${num}`, { mentions: [targetJid] });
+    } catch (error) {
+      await react("❌");
+      return reply(`❌ Failed to unblock: ${error.message}`);
+    }
+  },
+);
+
+gmd(
+  {
+    pattern: "blocklist",
+    aliases: ["blocked", "listblocked"],
+    react: "🚫",
+    category: "owner",
+    description: "List all blocked contacts",
+  },
+  async (from, Gifted, conText) => {
+    const { reply, react, isSuperUser } = conText;
+    const { convertLidToJid } = require("../stanytz/connection/serializer");
+
+    if (!isSuperUser) return reply("❌ Owner Only Command!");
+
+    try {
+      const blockedList = await Gifted.fetchBlocklist();
+
+      if (blockedList.length === 0) {
+        return reply("📭 No blocked contacts.");
+      }
+
+      const convertedList = blockedList.map(
+        (jid) => convertLidToJid(jid) || jid,
+      );
+
+      let message = `🚫 *BLOCKED CONTACTS* (${convertedList.length})\n\n`;
+      convertedList.forEach((jid, index) => {
+        message += `${index + 1}. @${jid.split("@")[0]}\n`;
+      });
+
+      await react("✅");
+      return reply(message, { mentions: convertedList });
+    } catch (error) {
+      await react("❌");
+      return reply(`❌ Failed to fetch blocklist: ${error.message}`);
+    }
+  },
+);
+
+gmd(
+  {
+    pattern: "forward",
+    aliases: ["fwd"],
+    react: "↪️",
+    category: "owner",
+    description:
+      "Forward a quoted message to a number/group. Usage: .fwd <jid> [custom caption]",
+  },
+  async (from, Gifted, conText) => {
+    const {
+      reply,
+      react,
+      isSuperUser,
+      quotedMsg,
+      args,
+      mek,
+      isGroup,
+      groupName,
+      botName,
+      newsletterJid,
+      botPrefix,
+    } = conText;
+    const { downloadMediaMessage } = require("../stanytz/connection/serializer");
+    const { isJidGroup } = require("gifted-baileys");
+
+    if (!isSuperUser) return reply("❌ Owner Only Command!");
+    if (!quotedMsg) return reply("❌ Please quote a message to forward!");
+    if (!args[0])
+      return reply(
+        `❌ Please provide a number or group JID!\n\nUsage: ${botPrefix}forward 255787069580 [caption]`,
+      );
+
+    try {
+      let targetJid = args[0];
+      if (!targetJid.includes("@")) {
+        if (targetJid.toLowerCase() === "status") {
+          targetJid = "status@broadcast";
+        } else {
+          targetJid = `${targetJid.replace(/[^0-9]/g, "")}@s.whatsapp.net`;
+        }
+      }
+
+      let sourceName = botName || "STANY TZ";
+      if (isGroup && groupName) {
+        sourceName = groupName;
+      } else if (!isGroup) {
+        sourceName = "Private Chat";
+      }
+
+      const forwardContextInfo = {
+        forwardingScore: 1,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: newsletterJid || "120363422524788798@newsletter",
+          newsletterName: sourceName,
+          serverMessageId: -1,
+        },
+      };
+
+      const customCaption = args.slice(1).join(" ") || null;
+      const msgType = Object.keys(quotedMsg)[0];
+      const { downloadContentFromMessage } = require("gifted-baileys");
+
+      if (msgType === "conversation" || msgType === "extendedTextMessage") {
+        const text =
+          quotedMsg.conversation || quotedMsg.extendedTextMessage?.text || "";
+        await Gifted.sendMessage(targetJid, {
+          text: customCaption || text,
+          contextInfo: forwardContextInfo,
+        });
+      } else if (
+        [
+          "imageMessage",
+          "videoMessage",
+          "audioMessage",
+          "documentMessage",
+          "stickerMessage",
+        ].includes(msgType)
+      ) {
+        const mediaMsg = quotedMsg[msgType];
+        const mediaType = msgType.replace("Message", "");
+
+        let buffer;
+        try {
+          const stream = await downloadContentFromMessage(mediaMsg, mediaType);
+          const chunks = [];
+          for await (const chunk of stream) {
+            chunks.push(chunk);
+          }
+          buffer = Buffer.concat(chunks);
+        } catch (dlErr) {
+          const altDownload =
+            require("../stanytz/connection/serializer").downloadMediaMessage;
+          const fakeMsg = { key: { remoteJid: from }, message: quotedMsg };
+          buffer = await altDownload(fakeMsg, Gifted);
+        }
+
+        if (!buffer || buffer.length === 0) {
+          return reply("❌ Failed to download media!");
+        }
+
+        const originalCaption = mediaMsg?.caption || "";
+        const caption =
+          customCaption !== null ? customCaption : originalCaption;
+        const mimetype = mediaMsg?.mimetype;
+        const filename =
+          mediaMsg?.fileName || `file.${mimetype?.split("/")[1] || "bin"}`;
+
+        if (msgType === "imageMessage") {
+          await Gifted.sendMessage(targetJid, {
+            image: buffer,
+            caption,
+            contextInfo: forwardContextInfo,
+          });
+        } else if (msgType === "videoMessage") {
+          await Gifted.sendMessage(targetJid, {
+            video: buffer,
+            caption,
+            mimetype,
+            contextInfo: forwardContextInfo,
+          });
+        } else if (msgType === "audioMessage") {
+          await Gifted.sendMessage(targetJid, {
+            audio: buffer,
+            mimetype,
+            ptt: mediaMsg?.ptt,
+            contextInfo: forwardContextInfo,
+          });
+        } else if (msgType === "documentMessage") {
+          await Gifted.sendMessage(targetJid, {
+            document: buffer,
+            mimetype,
+            fileName: filename,
+            caption,
+            contextInfo: forwardContextInfo,
+          });
+        } else if (msgType === "stickerMessage") {
+          await Gifted.sendMessage(targetJid, { sticker: buffer });
+        }
+      } else {
+        return reply(`❌ Unsupported message type: ${msgType}`);
+      }
+
+      await react("✅");
+      const targetName =
+        targetJid === "status@broadcast" ? "status" : targetJid.split("@")[0];
+      return reply(`✅ Message forwarded to ${targetName}!`);
+    } catch (error) {
+      await react("❌");
+      return reply(`❌ Failed to forward: ${error.message}`);
+    }
+  },
+);
+
+gmd(
+  {
+    pattern: "tostatus",
+    aliases: ["tomystatus", "statusfwd", "fwdstatus"],
+    react: "📢",
+    category: "owner",
+    description:
+      "Forward quoted message to your WhatsApp status. Usage: .tostatus [custom caption]",
+  },
+  async (from, Gifted, conText) => {
+    const { reply, react, isSuperUser, quotedMsg, q, mek } = conText;
+    const { downloadMediaMessage } = require("../stanytz/connection/serializer");
+
+    if (!isSuperUser) return reply("❌ Owner Only Command!");
+    if (!quotedMsg)
+      return reply("❌ Please quote a message to post to status!");
+
+    try {
+      const statusJid = "status@broadcast";
+      const customCaption = q?.trim() || null;
+      const msgType = Object.keys(quotedMsg)[0];
+
+      if (msgType === "conversation" || msgType === "extendedTextMessage") {
+        const text =
+          quotedMsg.conversation || quotedMsg.extendedTextMessage?.text || "";
+        const statusText = customCaption || text;
+        await Gifted.sendMessage(
+          statusJid,
+          {
+            text: statusText,
+            backgroundColor: "#075e54",
+            font: 1,
+          },
+          { statusJidList: await getStatusJidList(Gifted) },
+        );
+      } else if (["imageMessage", "videoMessage"].includes(msgType)) {
+        const contextInfo =
+          mek.message?.extendedTextMessage?.contextInfo ||
+          mek.message?.imageMessage?.contextInfo ||
+          mek.message?.videoMessage?.contextInfo ||
+          {};
+
+        const fakeMsg = {
+          key: { remoteJid: from, id: contextInfo.stanzaId },
+          message: quotedMsg,
+        };
+
+        const buffer = await downloadMediaMessage(fakeMsg, Gifted);
+        if (!buffer) {
+          return reply("❌ Failed to download media!");
+        }
+
+        const originalCaption = quotedMsg[msgType]?.caption || "";
+        const caption =
+          customCaption !== null ? customCaption : originalCaption;
+        const statusJidList = await getStatusJidList(Gifted);
+
+        if (msgType === "imageMessage") {
+          await Gifted.sendMessage(
+            statusJid,
+            { image: buffer, caption },
+            { statusJidList },
+          );
+        } else if (msgType === "videoMessage") {
+          await Gifted.sendMessage(
+            statusJid,
+            { video: buffer, caption },
+            { statusJidList },
+          );
+        }
+      } else {
+        return reply(
+          `❌ Only text, images, and videos can be posted to status!`,
+        );
+      }
+
+      await react("✅");
+      return reply("✅ Posted to your status!");
+    } catch (error) {
+      await react("❌");
+      return reply(`❌ Failed to post to status: ${error.message}`);
+    }
+  },
+);
+
+async function getStatusJidList(Gifted) {
+  try {
+    const contacts = await Gifted.groupFetchAllParticipating();
+    const jidList = [];
+    for (const group of Object.values(contacts)) {
+      if (group.participants) {
+        for (const p of group.participants) {
+          const jid = p.id || p.pn || p.phoneNumber;
+          if (jid && jid.endsWith("@s.whatsapp.net")) {
+            jidList.push(jid);
+          }
+        }
+      }
+    }
+    return [...new Set(jidList)];
+  } catch (e) {
+    return [];
+  }
+}
+
+gmd(
+  {
+    pattern: "join",
+    aliases: ["joingc", "joingroup"],
+    react: "🔗",
+    category: "owner",
+    description: "Join a group using invite link. Owner only.",
+  },
+  async (from, Gifted, conText) => {
+    const { reply, react, q, isSuperUser, mek, botName, newsletterJid } =
+      conText;
+
+    if (!isSuperUser) return reply("❌ Owner Only Command!");
+
+    if (!q) {
+      await react("❌");
+      return reply(
+        "❌ Please provide a group invite link.\nExample: .join https://chat.whatsapp.com/FHT9hXCbu1z4XiPbn7HKMw",
+      );
+    }
+
+    const linkMatch = q.match(/chat\.whatsapp\.com\/([a-zA-Z0-9]+)/);
+    if (!linkMatch) {
+      await react("❌");
+      return reply(
+        "❌ Invalid group invite link. Please provide a valid WhatsApp group link.",
+      );
+    }
+
+    const inviteCode = linkMatch[1];
+
+    try {
+      const groupId = await Gifted.groupAcceptInvite(inviteCode);
+
+      if (groupId) {
+        await react("✅");
+        await reply(`✅ Successfully joined group!\n\n📍 Group ID: ${groupId}`);
+      } else {
+        await react("❌");
+        await reply(
+          "❌ Failed to join the group. The invite link may be invalid or expired.",
+        );
+      }
+    } catch (error) {
+      await react("❌");
+      const errMsg = error.message || String(error);
+
+      if (errMsg.includes("conflict") || errMsg.includes("already")) {
+        return reply("❌ Bot is already a member of this group.");
+      } else if (errMsg.includes("gone") || errMsg.includes("expired")) {
+        return reply("❌ This invite link has expired or been revoked.");
+      } else if (errMsg.includes("forbidden")) {
+        return reply("❌ Bot is not allowed to join this group.");
+      }
+
+      return reply(`❌ Failed to join group: ${errMsg}`);
     }
   },
 );
