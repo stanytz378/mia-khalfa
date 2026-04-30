@@ -1,3 +1,12 @@
+/**
+ *  MIA KHALIFA - WhatsApp Bot
+ *  Copyright (c) 2026 STANY TZ
+ * 
+ *  GitHub: https://github.com/Stanytz378
+ *  YouTube: https://youtube.com/@STANYTZ
+ *  WhatsApp Channel: https://whatsapp.com/channel/0029Vb7fzu4EwEjmsD4Tzs1p
+ */
+
 const { gmd, gmdBuffer } = require("../stanytz");
 const axios = require("axios");
 
@@ -5,229 +14,229 @@ const logoEndpoints = [
   {
     pattern: "glossysilver",
     aliases: ["glossy", "silverlogo"],
-    description: "Glossy Silver logo",
+    description: "Glossy Silver STANY TZ logo",
     endpoint: "glossysilver",
   },
   {
     pattern: "angelWing",
-    aliases: ["angelWing", "stanytz6"],
-    description: "angelWing Silver logo",
+    aliases: ["angelWing"],
+    description: "Angel Wing STANY TZ logo",
     endpoint: "angelWing",
   },
   {
     pattern: "facebookTypo",
-    aliases: ["facebookTypo", "stanytz5"],
-    description: "facebookTypo Silver logo",
+    aliases: ["facebookTypo"],
+    description: "Facebook Typo STANY TZ logo",
     endpoint: "facebookTypo",
   },
   {
     pattern: "hollywoodStar",
-    aliases: ["hollywoodStar", "stanytz4"],
-    description: "hollywoodStar Silver logo",
+    aliases: ["hollywoodStar"],
+    description: "Hollywood Star STANY TZ logo",
     endpoint: "hollywoodStar",
   },
   {
     pattern: "blueNeonLogo",
     aliases: ["blueNeonLogo", "blueneon"],
-    description: "blueNeonLogo Silver logo",
+    description: "Blue Neon STANY TZ logo",
     endpoint: "blueNeonLogo",
   },
   {
     pattern: "fireworks",
-    aliases: ["fireworks", "stanytz3"],
-    description: "fireworks Silver logo",
+    aliases: ["fireworks"],
+    description: "Fireworks STANY TZ logo",
     endpoint: "fireworks",
   },
   {
     pattern: "fpsGamingLogo",
-    aliases: ["fpsGamingLogo", "stanytz2"],
-    description: "fpsGamingLogo Silver logo",
+    aliases: ["fpsGamingLogo"],
+    description: "FPS Gaming STANY TZ logo",
     endpoint: "fpsGamingLogo",
   },
   {
     pattern: "assassinLogo",
-    aliases: ["assassinLogo", "stanytz1"],
-    description: "assassinLogo Style logo",
+    aliases: ["assassinLogo"],
+    description: "Assassin STANY TZ logo",
     endpoint: "assassinLogo",
   },
   {
     pattern: "footballLogo",
     aliases: ["footballLogo", "ball"],
-    description: "footballLogo Style logo",
+    description: "Football STANY TZ logo",
     endpoint: "footballLogo",
   },
   {
     pattern: "neonDevilWings",
     aliases: ["neonDevilWings", "neon"],
-    description: "neonDevilWings Style logo",
+    description: "Neon Devil Wings STANY TZ logo",
     endpoint: "neonDevilWings",
   },
   {
     pattern: "mascotShield",
     aliases: ["mascotShield", "mascot"],
-    description: "mascotShield Style logo",
+    description: "Mascot Shield STANY TZ logo",
     endpoint: "mascotShield",
   },
   {
     pattern: "writetext",
     aliases: ["textwrite", "baby", "writtentext"],
-    description: "Write Text logo",
+    description: "Write Text STANY TZ logo",
     endpoint: "writetext",
   },
   {
     pattern: "blackpinklogo",
     aliases: ["bplogo", "pinkblack"],
-    description: "Black Pink Logo",
+    description: "Black Pink STANY TZ logo",
     endpoint: "blackpinklogo",
   },
   {
     pattern: "glitchtext",
     aliases: ["glitch", "textglitch"],
-    description: "Glitch Text logo",
+    description: "Glitch Text STANY TZ logo",
     endpoint: "glitchtext",
   },
   {
     pattern: "advancedglow",
     aliases: ["advglow", "glowadvanced"],
-    description: "Advanced Glow logo",
+    description: "Advanced Glow STANY TZ logo",
     endpoint: "advancedglow",
   },
   {
     pattern: "typographytext",
     aliases: ["typography", "typo"],
-    description: "Typography Text logo",
+    description: "Typography Text STANY TZ logo",
     endpoint: "typographytext",
   },
   {
     pattern: "pixelglitch",
     aliases: ["pixelg", "glitchpixel"],
-    description: "Pixel Glitch logo",
+    description: "Pixel Glitch STANY TZ logo",
     endpoint: "pixelglitch",
   },
   {
     pattern: "neonglitch",
     aliases: ["neong", "glitchneon"],
-    description: "Neon Glitch logo",
+    description: "Neon Glitch STANY TZ logo",
     endpoint: "neonglitch",
   },
   {
     pattern: "nigerianflag",
     aliases: ["ngflag", "nigeria"],
-    description: "Nigerian Flag logo",
+    description: "Nigerian Flag STANY TZ logo",
     endpoint: "nigerianflag",
   },
   {
     pattern: "americanflag",
     aliases: ["usflag", "usaflag", "america"],
-    description: "American Flag logo",
+    description: "American Flag STANY TZ logo",
     endpoint: "americanflag",
   },
   {
     pattern: "deletingtext",
     aliases: ["deltext", "textdelete"],
-    description: "Deleting Text logo",
+    description: "Deleting Text STANY TZ logo",
     endpoint: "deletingtext",
   },
   {
     pattern: "blackpinkstyle",
     aliases: ["bpstyle", "pinkblackstyle"],
-    description: "Blackpink Style logo",
+    description: "Blackpink Style STANY TZ logo",
     endpoint: "blackpinkstyle",
   },
   {
     pattern: "glowingtext",
     aliases: ["glowtxt", "textglow"],
-    description: "Glowing Text logo",
+    description: "Glowing Text STANY TZ logo",
     endpoint: "glowingtext",
   },
   {
     pattern: "underwater",
     aliases: ["underw", "waterlogo"],
-    description: "Under Water logo",
+    description: "Under Water STANY TZ logo",
     endpoint: "underwater",
   },
   {
     pattern: "logomaker",
     aliases: ["makelogo", "logomake"],
-    description: "Logo Maker",
+    description: "STANY TZ Logo Maker",
     endpoint: "logomaker",
   },
   {
     pattern: "cartoonstyle",
     aliases: ["cartoon", "toonlogo"],
-    description: "Cartoon Style logo",
+    description: "Cartoon Style STANY TZ logo",
     endpoint: "cartoonstyle",
   },
   {
     pattern: "papercut",
     aliases: ["cutpaper", "papercutlogo"],
-    description: "Paper Cut logo",
+    description: "Paper Cut STANY TZ logo",
     endpoint: "papercut",
   },
   {
     pattern: "effectclouds",
     aliases: ["cloudeffect", "clouds"],
-    description: "Effect Clouds logo",
+    description: "Effect Clouds STANY TZ logo",
     endpoint: "effectclouds",
   },
   {
     pattern: "gradienttext",
     aliases: ["gradient", "textgradient"],
-    description: "Gradient Text logo",
+    description: "Gradient Text STANY TZ logo",
     endpoint: "gradienttext",
   },
   {
     pattern: "summerbeach",
     aliases: ["beachsummer", "beach"],
-    description: "Summer Beach logo",
+    description: "Summer Beach STANY TZ logo",
     endpoint: "summerbeach",
   },
   {
     pattern: "sandsummer",
     aliases: ["summersand", "sand", "sandlogo"],
-    description: "Sand Summer logo",
+    description: "Sand Summer STANY TZ logo",
     endpoint: "sandsummer",
   },
   {
     pattern: "luxurygold",
     aliases: ["goldluxury", "luxgold"],
-    description: "Luxury Gold logo",
+    description: "Luxury Gold STANY TZ logo",
     endpoint: "luxurygold",
   },
   {
     pattern: "galaxy",
     aliases: ["galaxylogo", "space"],
-    description: "Galaxy logo",
+    description: "Galaxy STANY TZ logo",
     endpoint: "galaxy",
   },
   {
     pattern: "logo1917",
     aliases: ["1917", "1917logo"],
-    description: "1917 Style logo",
+    description: "1917 Style STANY TZ logo",
     endpoint: "1917",
   },
   {
     pattern: "makingneon",
     aliases: ["neonmake", "neonlogo"],
-    description: "Making Neon logo",
+    description: "Making Neon STANY TZ logo",
     endpoint: "makingneon",
   },
   {
     pattern: "texteffect",
     aliases: ["effecttext", "fxtext"],
-    description: "Text Effect logo",
+    description: "Text Effect STANY TZ logo",
     endpoint: "texteffect",
   },
   {
     pattern: "galaxystyle",
     aliases: ["stylegalaxy", "galstyle"],
-    description: "Galaxy Style logo",
+    description: "Galaxy Style STANY TZ logo",
     endpoint: "galaxystyle",
   },
   {
     pattern: "lighteffect",
     aliases: ["effectlight", "lightlogo"],
-    description: "Light Effect logo",
+    description: "Light Effect STANY TZ logo",
     endpoint: "lighteffect",
   },
 ];
@@ -256,7 +265,7 @@ async function createLogoCommand(config) {
       if (!q) {
         await react("❌");
         return reply(
-          `Please provide text for the logo.\n\n*Usage:* .${config.pattern} <text>\n*Example:* .${config.pattern} ${pushname || "Stany TZ"}`,
+          `Please provide text for the logo.\n\nUsage: .${config.pattern} <text>\nExample: .${config.pattern} ${pushname || "STANY TZ"}`,
         );
       }
 
@@ -316,7 +325,7 @@ gmd(
       .join("\n");
 
     await reply(
-      `🎨 *${botName} LOGO MAKER*\n\n${logoList}\n\n📝 *Usage:* ${botPrefix}commandname <your text>\n📌 *Example:* ${botPrefix}glossysilver Stany TZ\n\n> ${botCaption}`,
+      `🎨 *${botName} LOGO MAKER*\n\n${logoList}\n\n📝 *Usage:* ${botPrefix}commandname <your text>\n📌 *Example:* ${botPrefix}glossysilver STANY TZ\n\n> ${botCaption}`,
     );
     await react("✅");
   },
